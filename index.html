@@ -1,0 +1,2011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payroll &amp; Compliance Manager - ESIC, EPFO, PT</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --primary: #1a5276; --primary-light: #2980b9; --accent: #e67e22;
+  --bg: #f0f4f8; --card: #fff; --text: #2c3e50; --border: #dce1e8;
+  --success: #27ae60; --danger: #e74c3c; --shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+.app-header { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: #fff; padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+.app-header h1 { font-size: 1.4rem; font-weight: 600; }
+.app-header h1 small { font-size: 0.8rem; opacity: 0.8; display: block; font-weight: 400; }
+nav { display: flex; gap: 0.25rem; flex-wrap: wrap; }
+nav button { background: rgba(255,255,255,0.15); border: none; color: #fff; padding: 0.5rem 1.2rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem; transition: 0.2s; }
+nav button:hover { background: rgba(255,255,255,0.25); }
+nav button.active { background: #fff; color: var(--primary); font-weight: 600; }
+.container { max-width: 1400px; margin: 1.5rem auto; padding: 0 1.5rem; }
+.section { display: none; }
+.section.active { display: block; }
+.card { background: var(--card); border-radius: 10px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--shadow); }
+.card h2 { font-size: 1.15rem; margin-bottom: 1rem; color: var(--primary); border-bottom: 2px solid var(--bg); padding-bottom: 0.5rem; }
+.card h3 { font-size: 1rem; margin: 1rem 0 0.5rem; color: var(--text); }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+.form-group { margin-bottom: 0.85rem; }
+.form-group label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 0.25rem; color: #555; }
+.form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.55rem 0.75rem; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem; transition: 0.2s; }
+.form-group input:focus, .form-group select:focus { outline: none; border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(41,128,185,0.15); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+.btn { padding: 0.55rem 1.2rem; border: none; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 0.4rem; }
+.btn-primary { background: var(--primary-light); color: #fff; }
+.btn-primary:hover { background: var(--primary); }
+.btn-success { background: var(--success); color: #fff; }
+.btn-success:hover { background: #219a52; }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-danger:hover { background: #c0392b; }
+.btn-accent { background: var(--accent); color: #fff; }
+.btn-accent:hover { background: #d35400; }
+.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+.btn-outline:hover { background: var(--bg); }
+.btn-sm { padding: 0.35rem 0.8rem; font-size: 0.8rem; }
+table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+table th, table td { padding: 0.6rem 0.75rem; text-align: left; border-bottom: 1px solid var(--border); }
+table th { background: var(--bg); font-weight: 600; color: #555; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
+table tr:hover { background: #f8fafc; }
+.badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 12px; font-size: 0.7rem; font-weight: 600; }
+.badge-green { background: #d4edda; color: #155724; }
+.badge-blue { background: #d1ecf1; color: #0c5460; }
+.badge-orange { background: #fff3cd; color: #856404; }
+.text-right { text-align: right; }
+.text-center { text-align: center; }
+.mt-1 { margin-top: 1rem; }
+.mb-1 { margin-bottom: 1rem; }
+.ml-1 { margin-left: 0.5rem; }
+.flex { display: flex; align-items: center; gap: 0.75rem; }
+.flex-between { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+.toolbar { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.search-box { padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: 6px; font-size: 0.85rem; min-width: 220px; }
+.stat-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+.stat-card { background: var(--card); border-radius: 10px; padding: 1.2rem; box-shadow: var(--shadow); text-align: center; }
+.stat-card .num { font-size: 1.6rem; font-weight: 700; color: var(--primary); }
+.stat-card .label { font-size: 0.8rem; color: #777; margin-top: 0.2rem; }
+.payslip { max-width: 800px; margin: 0 auto; background: #fff; border: 2px solid var(--primary); padding: 2.5rem; font-size: 0.85rem; }
+.payslip h2 { text-align: center; color: var(--primary); border: none; margin-bottom: 0.25rem; font-size: 1.3rem; }
+.payslip .subtitle { text-align: center; color: #666; font-size: 0.8rem; margin-bottom: 1.5rem; }
+.payslip .details { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1rem; }
+.payslip .details div { padding: 0.25rem 0; }
+.payslip .details strong { display: inline-block; min-width: 110px; }
+.payslip table { margin: 1rem 0; }
+.payslip table th, .payslip table td { padding: 0.4rem 0.75rem; }
+.payslip .total-row td { font-weight: 700; border-top: 2px solid var(--primary); }
+.payslip .net-pay { text-align: center; font-size: 1.2rem; font-weight: 700; color: var(--success); margin: 1rem 0; padding: 0.75rem; border: 2px dashed var(--success); border-radius: 8px; }
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+.modal-overlay.show { display: flex; }
+.modal { background: var(--card); border-radius: 12px; padding: 2rem; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+.modal h2 { margin-bottom: 1rem; }
+.close-modal { float: right; font-size: 1.5rem; cursor: pointer; color: #999; }
+.close-modal:hover { color: #333; }
+.toast { position: fixed; bottom: 2rem; right: 2rem; background: #333; color: #fff; padding: 0.75rem 1.5rem; border-radius: 8px; font-size: 0.85rem; opacity: 0; transform: translateY(20px); transition: 0.3s; z-index: 2000; }
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.success { background: var(--success); }
+.toast.error { background: var(--danger); }
+.empty-state { text-align: center; padding: 3rem 1rem; color: #999; }
+.empty-state .icon { font-size: 3rem; margin-bottom: 0.5rem; }
+@media (max-width: 768px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+  .app-header { flex-direction: column; align-items: flex-start; }
+  nav { width: 100%; overflow-x: auto; }
+  .payslip { padding: 1rem; }
+}
+@media print {
+  .app-header, nav, .toolbar, .btn, .no-print { display: none !important; }
+  .section { display: block !important; }
+  .card { box-shadow: none; border: 1px solid #ddd; }
+  body { background: #fff; }
+  .payslip { border: 2px solid #000; max-width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div>
+    <h1>ESIC EPFO Payroll Manager <small>New Labour Code 2026 Compliant</small></h1>
+  </div>
+  <nav id="mainNav">
+    <button class="active" data-section="dashboard">Dashboard</button>
+    <button data-section="employees">Employees</button>
+    <button data-section="payslip">Payslip</button>
+    <button data-section="selfcontribution">Self Contri.</button>
+    <button data-section="mwrecovery">MW Recovery</button>
+    <button data-section="contributions">Contributions</button>
+    <button data-section="calculator">Calculator</button>
+    <button data-section="compliance">Minimum Wages</button>
+    <button data-section="settings">Settings</button>
+  </nav>
+</header>
+
+<div class="container">
+
+<!-- DASHBOARD -->
+<section id="section-dashboard" class="section active">
+  <div class="stat-cards" id="dashStats">
+    <div class="stat-card"><div class="num" id="empCount">0</div><div class="label">Total Employees</div></div>
+    <div class="stat-card"><div class="num" id="esiCount">0</div><div class="label">ESIC Eligible</div></div>
+    <div class="stat-card"><div class="num" id="epfCount">0</div><div class="label">EPF Eligible</div></div>
+    <div class="stat-card"><div class="num" id="ptCount">0</div><div class="label">PT Deducted</div></div>
+  </div>
+  <div class="card">
+    <div class="flex-between">
+      <h2>Recent Payslips</h2>
+      <div class="flex">
+        <select id="dashMonth" class="search-box" style="min-width:auto;padding:0.4rem 0.6rem;"></select>
+      </div>
+    </div>
+    <div id="dashPayslips"><div class="empty-state"><div class="icon">📄</div><p>No payslips generated yet</p></div></div>
+  </div>
+  <div class="card">
+    <h2>Quick Actions</h2>
+    <div class="flex" style="gap:0.75rem;flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="switchSection('employees')">+ Add Employee</button>
+      <button class="btn btn-success" onclick="switchSection('payslip')">Generate Payslips</button>
+      <button class="btn btn-accent" onclick="switchSection('contributions')">Monthly Contributions</button>
+      <button class="btn btn-accent" onclick="switchSection('calculator')">Salary Calculator</button>
+      <button class="btn btn-outline" onclick="switchSection('compliance')">View Minimum Wages</button>
+    </div>
+  </div>
+</section>
+
+<!-- EMPLOYEES -->
+<section id="section-employees" class="section">
+  <div class="card">
+    <div class="flex-between">
+      <h2>Employee Records</h2>
+      <button class="btn btn-primary" onclick="showEmployeeModal()">+ Add Employee</button>
+    </div>
+    <div class="toolbar">
+      <input type="text" class="search-box" id="empSearch" placeholder="Search employees..." oninput="renderEmployees()">
+      <select id="empFilterDept" class="search-box" style="min-width:auto;" onchange="renderEmployees()">
+        <option value="">All Departments</option>
+      </select>
+    </div>
+    <div style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th><th>Name</th><th>Designation</th><th>Department</th><th>Basic</th><th>Gross</th><th>ESI</th><th>EPF</th><th>PT</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="empTableBody"></tbody>
+      </table>
+    </div>
+    <div id="empEmpty" class="empty-state"><div class="icon">👤</div><p>No employees added yet. Click "Add Employee" to begin.</p></div>
+  </div>
+</section>
+
+<!-- PAYSLIP -->
+<section id="section-payslip" class="section">
+  <div class="card">
+    <div class="flex-between">
+      <h2>Generate Payslips</h2>
+      <div class="flex">
+        <select id="psMonth" class="search-box" style="min-width:auto;padding:0.4rem 0.6rem;"></select>
+        <select id="psYear" class="search-box" style="min-width:auto;padding:0.4rem 0.6rem;"></select>
+        <button class="btn btn-success" onclick="generateAllPayslips()">Generate All</button>
+      </div>
+    </div>
+    <div class="toolbar">
+      <select id="psFilterEmp" class="search-box" style="min-width:auto;" onchange="renderPayslips()">
+        <option value="">All Employees</option>
+      </select>
+    </div>
+    <div id="psList"></div>
+    <div id="psEmpty" class="empty-state"><div class="icon">📄</div><p>Select month and generate payslips</p></div>
+  </div>
+</section>
+
+<!-- SELF CONTRIBUTION -->
+<section id="section-selfcontribution" class="section">
+  <div class="card">
+    <div class="flex-between">
+      <h2>Self-Contribution — Amount to Collect from Employees</h2>
+      <div class="flex">
+        <select id="scMonth" class="search-box" style="min-width:auto;padding:0.4rem 0.6rem;" onchange="renderSelfContribution()"></select>
+        <select id="scYear" class="search-box" style="min-width:auto;padding:0.4rem 0.6rem;" onchange="renderSelfContribution()"></select>
+        <button class="btn btn-success" onclick="generateSelfContribution()">Generate</button>
+      </div>
+    </div>
+    <div id="scReport"></div>
+  </div>
+</section>
+
+<!-- MW RECOVERY -->
+<section id="section-mwrecovery" class="section">
+  <div class="card">
+    <div class="flex-between">
+      <h2>Minimum Wage Top-up Recovery</h2>
+      <div class="flex">
+        <select id="mwMonth" class="search-box month-picker" style="min-width:auto;padding:0.4rem 0.6rem;" onchange="renderMwRecovery()"></select>
+        <select id="mwYear" class="search-box" style="min-width:auto;padding:0.4rem 0.6rem;" onchange="renderMwRecovery()"></select>
+        <button class="btn btn-success" onclick="generateMwRecovery()">Generate Report</button>
+      </div>
+    </div>
+    <p style="font-size:0.8rem;color:#888;margin-bottom:1rem;">
+      For employees where actual salary is below minimum wage. Company pays the minimum wage gross on payslip (for compliance)
+      and recovers the excess amount from the employee. The recovery appears as a deduction on the payslip.
+    </p>
+    <div id="mwRecoveryReport"></div>
+  </div>
+</section>
+
+<!-- CONTRIBUTIONS -->
+<section id="section-contributions" class="section">
+  <div class="card">
+    <div class="flex-between">
+      <h2>Monthly Contribution Report</h2>
+      <div class="flex">
+        <select id="contMonth" class="search-box" style="min-width:auto;padding:0.4rem 0.6rem;" onchange="renderContributions()"></select>
+        <select id="contYear" class="search-box" style="min-width:auto;padding:0.4rem 0.6rem;" onchange="renderContributions()"></select>
+        <button class="btn btn-success" onclick="generateContributionData()">Generate Report</button>
+      </div>
+    </div>
+    <div id="contReport"></div>
+  </div>
+</section>
+
+<!-- CALCULATOR -->
+<section id="section-calculator" class="section">
+  <div class="card">
+    <h2>Salary &amp; Deduction Calculator</h2>
+    <div class="grid-2">
+      <div>
+        <div class="form-group"><label>Employee Name</label><input type="text" id="calcName" value="Sample Employee"></div>
+        <div class="form-group"><label>Designation (for min wage check)</label>
+            <select id="calcDesig" onchange="runCalculator()">
+              <option value="Watchman">Watchman</option>
+              <option value="Security Guard">Security Guard</option>
+              <option value="Sweeper">Sweeper / Cleaner</option>
+              <option value="Peon">Peon</option>
+              <option value="Attender">Attender / Helper</option>
+              <option value="Store Keeper">Store Keeper</option>
+              <option value="Accountant">Accountant</option>
+              <option value="Clerk">Clerk</option>
+              <option value="Supervisor">Supervisor</option>
+              <option value="Manager">Manager</option>
+              <option value="Gardener">Gardener</option>
+              <option value="Priest">Priest</option>
+              <option value="Assistant Priest">Assistant Priest</option>
+              <option value="Preacher">Preacher / Pravachaka</option>
+              <option value="Donations Collector">Donations Collector</option>
+              <option value="Hundi Opener">Hundi Opener / Counter</option>
+              <option value="Flower Decorator">Flower Decorator</option>
+              <option value="Record Keeper">Record Keeper</option>
+              <option value="Cook">Cook</option>
+              <option value="Assistant Cook">Assistant Cook</option>
+            </select>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Basic + DA (₹)</label><input type="number" id="calcBasic" value="18000" oninput="runCalculator()"></div>
+          <div class="form-group"><label>HRA (₹)</label><input type="number" id="calcHra" value="7200" oninput="runCalculator()"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Conveyance (₹)</label><input type="number" id="calcConv" value="1600" oninput="runCalculator()"></div>
+          <div class="form-group"><label>Medical (₹)</label><input type="number" id="calcMed" value="1250" oninput="runCalculator()"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Special Allowance (₹)</label><input type="number" id="calcSpecial" value="0" oninput="runCalculator()"></div>
+          <div class="form-group"><label>State for PT / Min Wage</label>
+            <select id="calcState" onchange="runCalculator()">
+              <option value="andhrapradesh" selected>Andhra Pradesh</option>
+              <option value="karnataka">Karnataka</option>
+              <option value="maharashtra">Maharashtra</option>
+              <option value="tamilnadu">Tamil Nadu</option>
+              <option value="telangana">Telangana</option>
+              <option value="gujarat">Gujarat</option>
+              <option value="westbengal">West Bengal</option>
+              <option value="kerala">Kerala</option>
+              <option value="other">Other (No PT)</option>
+            </select>
+          </div>
+          <div class="form-group"><label>AP Min Wage Zone</label>
+            <select id="calcZone" onchange="runCalculator()">
+              <option value="I">Zone I (Corp/Municipal)</option>
+              <option value="II">Zone II (Gram Panchayat)</option>
+              <option value="III">Zone III</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>EPF Voluntary Contribution</label>
+            <select id="calcVPF" onchange="runCalculator()">
+              <option value="0">0%</option>
+              <option value="1">1%</option>
+              <option value="2">2%</option>
+              <option value="3">3%</option>
+              <option value="4">4%</option>
+              <option value="5">5%</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Applicable ESIC</label>
+            <select id="calcESIC" onchange="runCalculator()">
+              <option value="auto">Auto (based on gross)</option>
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin:0.5rem 0;padding:0.5rem;background:#fff8e1;border-radius:6px;border:1px solid #ffe082;">
+          <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-size:0.85rem;">
+            <input type="checkbox" id="calcEpfOptOut" onchange="runCalculator()">
+            <strong>EPF Opt-out (excluded employee)</strong> — applicable only if basic > ₹15,000
+          </label>
+        </div>
+        <div style="margin:0.5rem 0;padding:0.5rem;background:#e8eaf6;border-radius:6px;border:1px solid #9fa8da;">
+          <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-size:0.85rem;">
+            <input type="checkbox" id="calcSelfContribute" onchange="runCalculator()">
+            <strong>Self-contribution mode</strong> — employee bears both sides of ESIC &amp; EPFO
+          </label>
+        </div>
+      </div>
+      <div>
+        <table>
+          <thead><tr><th>Component</th><th class="text-right">Amount (₹)</th></tr></thead>
+          <tbody id="calcResults"></tbody>
+        </table>
+        <div id="calcTakeHome" style="margin-top:1rem;padding:0.75rem;background:#e8f5e9;border-radius:8px;text-align:center;font-size:1.1rem;font-weight:700;color:var(--success);"></div>
+      </div>
+    </div>
+    <button class="btn btn-primary mt-1" onclick="generatePayslipFromCalc()">Generate Payslip</button>
+  </div>
+</section>
+
+<!-- COMPLIANCE - Minimum Wages -->
+<section id="section-compliance" class="section">
+  <div class="card">
+    <div class="flex-between">
+      <h2>Minimum Wages Reference</h2>
+      <div class="flex">
+        <select id="mwState" class="search-box" style="min-width:auto;padding:0.4rem 0.6rem;" onchange="renderMinWages()">
+          <option value="ap">Andhra Pradesh (State)</option>
+          <option value="central">Central Govt</option>
+        </select>
+        <select id="mwZone" class="search-box" style="min-width:auto;padding:0.4rem 0.6rem;" onchange="renderMinWages()">
+          <option value="I">Zone I (Corp/Municipal)</option>
+          <option value="II">Zone II (Gram Panchayat)</option>
+          <option value="III">Zone III</option>
+        </select>
+        <select id="compArea" class="search-box" style="min-width:auto;padding:0.4rem 0.6rem;" onchange="renderMinWages()">
+          <option value="A">Area A (Metro Cities)</option>
+          <option value="B">Area B (Non-Metro Cities)</option>
+          <option value="C">Area C (Rural Areas)</option>
+        </select>
+      </div>
+    </div>
+    <p style="font-size:0.8rem;color:#888;margin-bottom:1rem;">AP Gazette G/430/2025 w.e.f. 01-04-2025 (VDA @ ₹6.4-6.75/point). Central Govt revised rates w.e.f. 1st April 2026. Select AP for state-specific zone-wise rates.</p>
+    <div id="minWageTable"></div>
+  </div>
+  <div class="card">
+    <h2>Compliance Checklist (New Labour Code 2026)</h2>
+    <div id="complianceChecklist"></div>
+  </div>
+  <div class="card">
+    <h2>Key Notes - New Labour Code on Social Security 2020 (Effective 2026)</h2>
+    <ul style="padding-left:1.2rem;font-size:0.85rem;">
+      <li>EPF Scheme 2026 replaces EPF Scheme 1952 w.e.f. 29 June 2026 under Code on Social Security, 2020</li>
+      <li>EPF contribution rates unchanged: Employee 12%, Employer 12% (8.33% EPS + 3.67% EPF) on basic+DA up to ₹15,000/month ceiling</li>
+      <li>ESIC: Employee 0.75%, Employer 3.25% for gross wages up to ₹21,000/month</li>
+      <li>Professional Tax varies by state - Karnataka exempts up to ₹25,000/month (as of Apr 2025)</li>
+      <li>Minimum wages revised half-yearly (April &amp; October) based on CPI-IW</li>
+      <li>Universal Account Number (UAN) remains the primary PF account identifier</li>
+      <li>Digital processes and electronic filing now formally recognized under the new scheme</li>
+      <li>Principal employer liable when labour contractor defaults on PF contributions</li>
+    </ul>
+  </div>
+</section>
+
+<!-- SETTINGS -->
+<section id="section-settings" class="section">
+  <div class="card">
+    <h2>Organization Settings</h2>
+    <div class="grid-2">
+      <div class="form-group"><label>Company Name</label><input type="text" id="setCompany" value="My Company Pvt. Ltd." onchange="saveSettings()"></div>
+      <div class="form-group"><label>Company Address</label><input type="text" id="setAddress" value="123, Business Park, Main Road" onchange="saveSettings()"></div>
+      <div class="form-group"><label>City</label><input type="text" id="setCity" value="Bengaluru" onchange="saveSettings()"></div>
+      <div class="form-group"><label>State (for PT)</label>
+        <select id="setState" onchange="saveSettings()">
+          <option value="andhrapradesh" selected>Andhra Pradesh</option>
+          <option value="karnataka">Karnataka</option>
+          <option value="maharashtra">Maharashtra</option>
+          <option value="tamilnadu">Tamil Nadu</option>
+          <option value="telangana">Telangana</option>
+          <option value="andhrapradesh">Andhra Pradesh</option>
+          <option value="gujarat">Gujarat</option>
+          <option value="westbengal">West Bengal</option>
+          <option value="kerala">Kerala</option>
+          <option value="other">Other (No PT)</option>
+        </select>
+      </div>
+      <div class="form-group"><label>ESI Wage Ceiling (₹)</label><input type="number" id="setESICeil" value="21000" onchange="saveSettings()"></div>
+      <div class="form-group"><label>EPF Wage Ceiling (₹)</label><input type="number" id="setEPFCeil" value="15000" onchange="saveSettings()"></div>
+    </div>
+    <hr style="margin:1.5rem 0;border:none;border-top:1px solid var(--border);">
+    <h2>Data Management</h2>
+    <div class="flex" style="gap:0.75rem;flex-wrap:wrap;">
+      <button class="btn btn-danger" onclick="confirmClearData()">Clear All Data</button>
+      <button class="btn btn-outline" onclick="exportData()">Export Data (JSON)</button>
+      <button class="btn btn-outline" onclick="document.getElementById('importFile').click()">Import Data</button>
+      <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+    </div>
+  </div>
+</section>
+
+</div>
+
+<!-- EMPLOYEE MODAL -->
+<div class="modal-overlay" id="empModal">
+  <div class="modal">
+    <span class="close-modal" onclick="closeEmployeeModal()">&times;</span>
+    <h2 id="empModalTitle">Add Employee</h2>
+    <input type="hidden" id="empEditId">
+    <div class="grid-2">
+      <div class="form-group"><label>Employee Name *</label><input type="text" id="empName"></div>
+      <div class="form-group"><label>Employee Code/ID *</label><input type="text" id="empCode"></div>
+      <div class="form-group"><label>Designation</label>
+        <select id="empDesignation">
+          <option value="">Select...</option>
+          <option value="Watchman">Watchman</option>
+          <option value="Sweeper">Sweeper</option>
+          <option value="Store Keeper">Store Keeper</option>
+          <option value="Attender">Attender</option>
+          <option value="Peon">Peon</option>
+          <option value="Office Boy">Office Boy</option>
+          <option value="Helper">Helper</option>
+          <option value="Security Guard">Security Guard</option>
+          <option value="Cleaner">Cleaner</option>
+          <option value="Priest">Priest</option>
+          <option value="Assistant Priest">Assistant Priest</option>
+          <option value="Cook">Cook (Prasadam)</option>
+          <option value="Assistant Cook">Assistant Cook</option>
+          <option value="Preacher">Preacher / Pravachaka</option>
+          <option value="Donations Collector">Donations Collector</option>
+          <option value="Hundi Opener">Hundi Opener / Counter</option>
+          <option value="Flower Decorator">Flower Decorator</option>
+          <option value="Record Keeper">Record Keeper</option>
+          <option value="Gardener">Gardener</option>
+          <option value="Accountant">Accountant</option>
+          <option value="Supervisor">Supervisor</option>
+          <option value="Manager">Manager</option>
+          <option value="Clerk">Clerk</option>
+          <option value="Computer Operator">Computer Operator</option>
+          <option value="Cashier">Cashier</option>
+          <option value="Other">Other</option>
+        </select>
+        <div id="empMinWageInfo" style="font-size:0.75rem;margin-top:0.25rem;min-height:1rem;"></div>
+      </div>
+      <div class="form-group"><label>Department</label>
+        <select id="empDept">
+          <option value="General">General</option>
+          <option value="Security">Security</option>
+          <option value="Housekeeping">Housekeeping</option>
+          <option value="Store">Store</option>
+          <option value="Administration">Administration</option>
+          <option value="Accounts">Accounts</option>
+          <option value="IT">IT</option>
+          <option value="Maintenance">Maintenance</option>
+          <option value="Temple">Temple (Pooja)</option>
+          <option value="Donations">Donations / Hundi</option>
+          <option value="Prasadam">Prasadam / Kitchen</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Date of Joining</label><input type="date" id="empDoj"></div>
+      <div class="form-group"><label>Gender</label>
+        <select id="empGender"><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option></select>
+      </div>
+      <div class="form-group"><label>UAN (EPFO)</label><input type="text" id="empUan" placeholder="12-digit UAN"></div>
+      <div class="form-group"><label>ESIC Number</label><input type="text" id="empEsicNo" placeholder="17-digit ESIC No."></div>
+      <div class="form-group"><label>Bank Account No.</label><input type="text" id="empBank"></div>
+      <div class="form-group"><label>Bank Name &amp; IFSC</label><input type="text" id="empIfsc" placeholder="Bank Name / IFSC"></div>
+    </div>
+    <div style="margin:0.75rem 0;padding:0.5rem;background:#fff8e1;border-radius:6px;border:1px solid #ffe082;">
+      <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-size:0.85rem;">
+        <input type="checkbox" id="empEpfOptOut">
+        <strong>Excluded from EPF (opt-out)</strong> — Check if employee joined with basic > ₹15,000 and opts out
+      </label>
+    </div>
+    <div style="margin:0.75rem 0;padding:0.5rem;background:#e8eaf6;border-radius:6px;border:1px solid #9fa8da;">
+      <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-size:0.85rem;">
+        <input type="checkbox" id="empSelfContribute">
+        <strong>Self-contribution mode</strong> — Employee bears BOTH employee + employer ESIC &amp; EPFO contributions (net pay = gross - total contributions)
+      </label>
+    </div>
+    <h3>Salary Structure</h3>
+    <div class="grid-2">
+      <div class="form-group"><label>Basic + DA (₹) *</label><input type="number" id="empBasic" value="10000"></div>
+      <div class="form-group"><label>HRA (₹)</label><input type="number" id="empHra" value="4000"></div>
+      <div class="form-group"><label>Conveyance (₹)</label><input type="number" id="empConv" value="1600"></div>
+      <div class="form-group"><label>Medical (₹)</label><input type="number" id="empMed" value="1250"></div>
+      <div class="form-group"><label>Special Allowance (₹)</label><input type="number" id="empSpecial" value="0"></div>
+      <div class="form-group"><label>Other Allowance (₹)</label><input type="number" id="empOther" value="0"></div>
+      <div class="form-group"><label>Actual Gross (for MW Recovery)</label><input type="number" id="empActualSalary" value="" placeholder="Leave blank if same as gross"></div>
+    </div>
+    <div style="margin:0.75rem 0;padding:0.5rem;background:#fff3e0;border-radius:6px;border:1px solid #ffcc80;">
+      <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-size:0.85rem;">
+        <input type="checkbox" id="empMwRecovery">
+        <strong>Minimum Wage Top-up Recovery Mode</strong> — Company pays min wage gross but recovers excess above actual salary
+      </label>
+    </div>
+    <div class="mt-1 flex">
+      <button class="btn btn-primary" onclick="saveEmployee()">Save Employee</button>
+      <button class="btn btn-outline" onclick="closeEmployeeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAYSLIP MODAL -->
+<div class="modal-overlay" id="psModal">
+  <div class="modal" style="max-width:850px;">
+    <span class="close-modal" onclick="closePsModal()">&times;</span>
+    <div id="psModalContent"></div>
+    <div class="flex mt-1 no-print">
+      <button class="btn btn-primary" onclick="printPayslip()">Print / Save PDF</button>
+      <button class="btn btn-outline" onclick="closePsModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ====== CONSTANTS ======
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+const ESIC_EMP_RATE = 0.0075;
+const ESIC_EMP_RATE_DISABLED = 0.0;
+const ESIC_EMPLOYER_RATE = 0.0325;
+const EPF_EMP_RATE = 0.12;
+const EPF_ER_RATE = 0.12;
+const EPS_RATE = 0.0833;
+const EPF_IN_EPF_RATE = 0.0367;
+const EDLI_RATE = 0.005;
+const EDLI_ADMIN_RATE = 0.005;
+
+const PT_SLABS = {
+  karnataka: { label: 'Karnataka', exemption: 25000, monthly: 200, feb: 300, annual: 2500, desc: 'Exempt up to ₹25,000/month' },
+  maharashtra: { label: 'Maharashtra', exemption: 7500, monthly_male: 200, monthly_f175: 175, feb: 300, annual: 2500, gender_exempt: 25000, desc: 'Women exempt up to ₹25,000' },
+  tamilnadu: { label: 'Tamil Nadu', half_yearly: true, annual: 2500, desc: 'Half-yearly slabs' },
+  telangana: { label: 'Telangana', exemption: 15000, s15001: 150, s20001: 200, annual: 2400, desc: '₹150 (15k-20k), ₹200 (above 20k)' },
+  andhrapradesh: { label: 'Andhra Pradesh', exemption: 15000, s15001: 150, s20001: 200, annual: 2400, desc: '₹150 (15k-20k), ₹200 (above 20k)' },
+  gujarat: { label: 'Gujarat', exemption: 12000, monthly: 200, annual: 2400, desc: '₹200/month above ₹12,000' },
+  westbengal: { label: 'West Bengal', exemption: 10000, monthly: 200, annual: 2400, desc: '₹200/month above ₹10,000' },
+  kerala: { label: 'Kerala', half_yearly: true, annual: 2500, desc: 'Half-yearly slabs, max ₹2,500/yr' },
+  other: { label: 'Other States', exemption: 0, monthly: 0, annual: 0, desc: 'No Professional Tax' }
+};
+
+const MIN_WAGES_CENTRAL = {
+  watchman: { label: 'Watchman / Security (Without Arms)', A: 1008, B: 918, C: 781 },
+  watchmanArms: { label: 'Watchman / Security (With Arms)', A: 1094, B: 1008, C: 918 },
+  sweeper: { label: 'Sweeper / Cleaner (Central)', A: 827, B: 693, C: 556 },
+  sweeperState: { label: 'Sweeper / Peon (State - Zone II)', A: 486, B: 474, C: 474 },
+  attender: { label: 'Attender / Peon / Helper (Central)', A: 827, B: 693, C: 556 },
+  storeKeeper: { label: 'Store Keeper / Accountant / Clerk (Skilled)', A: 1008, B: 918, C: 781 },
+  gardener: { label: 'Gardener / Mali', A: 827, B: 693, C: 556 },
+  priest: { label: 'Priest (Archaka)', A: 827, B: 693, C: 556 },
+  assistantPriest: { label: 'Assistant Priest / Upadhivanta', A: 783, B: 660, C: 530 },
+  cook: { label: 'Cook (Semi-skilled)', A: 827, B: 693, C: 556 },
+  assistantCook: { label: 'Assistant Cook (Unskilled)', A: 783, B: 660, C: 530 },
+  supervisor: { label: 'Supervisor / Manager', A: 1094, B: 1008, C: 918 },
+  unskilled: { label: 'Unskilled Labour (General)', A: 783, B: 660, C: 530 }
+};
+
+const AP_MIN_WAGES_MONTHLY = {
+  apShopsManager: { label: 'Manager/Field Officer (AP Shops)', zones: ['I','II'], rates: { I: 14267, II: 13848 } },
+  apShopsAccountant: { label: 'Accountant/Supervisor/Store Keeper (AP Shops)', zones: ['I','II'], rates: { I: 13432, II: 13230 } },
+  apShopsClerk: { label: 'Clerk/Typist/Computer Operator (AP Shops)', zones: ['I','II'], rates: { I: 12596, II: 12467 } },
+  apPeon: { label: 'Peon/Attender/Watchman/Helper (AP Shops)', zones: ['I','II'], rates: { I: 12410, II: 12080 } },
+  apSecurityHighlySkilled: { label: 'Security Supervisor/Officer (AP Security)', zones: ['I','II','III'], rates: { I: 16248, II: 15248, III: 13748 } },
+  apSecuritySkilled: { label: 'Security Inspector (AP Security)', zones: ['I','II','III'], rates: { I: 15748, II: 14748, III: 13248 } },
+  apSecuritySemiSkilled: { label: 'Security Guard with Arms (AP Security)', zones: ['I','II','III'], rates: { I: 15248, II: 14248, III: 12998 } },
+  apSecurityUnskilled: { label: 'Security Guard without Arms (AP Security)', zones: ['I','II','III'], rates: { I: 13748, II: 12998, III: 12748 } },
+  apBuildingSkilled: { label: 'Skilled - Mason/Carpenter (AP Building)', zones: ['I'], rates: { I: 13648 } },
+  apBuildingSemiSkilled: { label: 'Semi-Skilled - 2nd Class (AP Building)', zones: ['I'], rates: { I: 12812 } },
+  apBuildingUnskilled: { label: 'Unskilled - Mazdoor/Sweeper/Watchman (AP Building)', zones: ['I'], rates: { I: 12080 } },
+  apBuildingOther: { label: 'Clerk/Store-keeper/Accountant (AP Building)', zones: ['I'], rates: { I: 13012 } },
+  apMetalPeon: { label: 'Peon/Watchman/Cleaner/Gardener (AP Metal)', zones: ['I'], rates: { I: 11701 } },
+  apMetalSkilled: { label: 'Skilled - Turner/Welder (AP Metal)', zones: ['I'], rates: { I: 14488 } },
+  apMetalSemiSkilled: { label: 'Semi-Skilled - Grinder/Helper (AP Metal)', zones: ['I'], rates: { I: 12172 } },
+  apFactoryHighlySkilled: { label: 'Highly Skilled - Engineer/Manager (AP Factory)', zones: ['I'], rates: { I: 22946 } },
+  apFactorySkilled: { label: 'Skilled - Technician/Fitter/Welder (AP Factory)', zones: ['I'], rates: { I: 18504 } },
+  apFactorySemiSkilled: { label: 'Semi-Skilled (AP Factory)', zones: ['I'], rates: { I: 15186 } },
+  apFactorySteno: { label: 'Steno/Accountant/DEO (AP Factory)', zones: ['I'], rates: { I: 14930 } },
+  apFactoryClerk: { label: 'Clerk/Typist/Cashier (AP Factory)', zones: ['I'], rates: { I: 14358 } },
+  apFactoryUnskilled: { label: 'Helper/Attender/Watchman (AP Factory)', zones: ['I'], rates: { I: 12939 } }
+};
+
+const AP_DESIG_TO_MINWAGE = {
+  'Watchman': 'apPeon',
+  'Security Guard': 'apSecurityUnskilled',
+  'Sweeper': 'apBuildingUnskilled',
+  'Cleaner': 'apBuildingUnskilled',
+  'Store Keeper': 'apShopsAccountant',
+  'Accountant': 'apShopsAccountant',
+  'Clerk': 'apShopsClerk',
+  'Computer Operator': 'apShopsClerk',
+  'Cashier': 'apShopsClerk',
+  'Supervisor': 'apShopsAccountant',
+  'Attender': 'apPeon',
+  'Peon': 'apPeon',
+  'Office Boy': 'apPeon',
+  'Helper': 'apPeon',
+  'Gardener': 'apMetalPeon',
+  'Manager': 'apShopsManager',
+  'Preacher': 'apShopsManager',
+  'Donations Collector': 'apShopsClerk',
+  'Hundi Opener': 'apShopsClerk',
+  'Flower Decorator': 'apBuildingUnskilled',
+  'Record Keeper': 'apShopsClerk',
+  'Cook': null,
+  'Assistant Cook': null,
+  'Assistant Priest': null,
+  'Priest': null,
+  'Other': null
+};
+
+const MIN_WAGES_MONTHLY = {
+  watchman: { label: 'Watchman / Security Guard (Central)', A: 26208, B: 23868, C: 20306 },
+  watchmanArms: { label: 'Watchman / Security Armed (Central)', A: 28444, B: 26208, C: 23868 },
+  sweeper: { label: 'Sweeper / Cleaner (Central)', A: 21502, B: 18018, C: 14456 },
+  sweeperState: { label: 'Sweeper / Peon / Attender (State Zone II)', A: 12647, B: 12317, C: 12317 },
+  attender: { label: 'Attender / Peon / Helper (Central)', A: 21502, B: 18018, C: 14456 },
+  storeKeeper: { label: 'Store Keeper / Accountant / Clerk (Central)', A: 26208, B: 23868, C: 20306 },
+  gardener: { label: 'Gardener / Mali (Central)', A: 21502, B: 18018, C: 14456 },
+  priest: { label: 'Priest / Archaka (Central)', A: 21502, B: 18018, C: 14456 },
+  assistantPriest: { label: 'Assistant Priest (Central)', A: 20358, B: 17160, C: 13780 },
+  cook: { label: 'Cook (Central Semi-skilled)', A: 21502, B: 18018, C: 14456 },
+  assistantCook: { label: 'Assistant Cook (Central Unskilled)', A: 20358, B: 17160, C: 13780 },
+  supervisor: { label: 'Supervisor / Manager (Central)', A: 28444, B: 26208, C: 23868 },
+  unskilled: { label: 'Unskilled Labour (Central)', A: 20358, B: 17160, C: 13780 }
+};
+
+// ====== STATE ======
+let data = { employees: [], payslips: [], settings: {} };
+let currentPsView = null;
+
+function getSettings() {
+  return {
+    company: document.getElementById('setCompany').value || 'My Company',
+    address: document.getElementById('setAddress').value || '',
+    city: document.getElementById('setCity').value || '',
+    state: document.getElementById('setState').value || 'andhrapradesh',
+    esiCeil: parseInt(document.getElementById('setESICeil').value) || 21000,
+    epfCeil: parseInt(document.getElementById('setEPFCeil').value) || 15000
+  };
+}
+
+function saveSettings() {
+  const s = getSettings();
+  data.settings = s;
+  saveData();
+}
+
+function loadData() {
+  try {
+    const raw = localStorage.getItem('payrollApp');
+    if (raw) {
+      const d = JSON.parse(raw);
+      data.employees = d.employees || [];
+      data.payslips = d.payslips || [];
+      data.settings = d.settings || {};
+    }
+  } catch(e) {}
+  applySettings();
+}
+
+function saveData() {
+  try {
+    localStorage.setItem('payrollApp', JSON.stringify(data));
+  } catch(e) {}
+}
+
+function applySettings() {
+  const s = data.settings;
+  if (!s) return;
+  if (s.company) document.getElementById('setCompany').value = s.company;
+  if (s.address) document.getElementById('setAddress').value = s.address;
+  if (s.city) document.getElementById('setCity').value = s.city;
+  if (s.state) document.getElementById('setState').value = s.state;
+  if (s.esiCeil) document.getElementById('setESICeil').value = s.esiCeil;
+  if (s.epfCeil) document.getElementById('setEPFCeil').value = s.epfCeil;
+}
+
+function toast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast ' + (type || '');
+  setTimeout(() => t.classList.add('show'), 10);
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ====== NAVIGATION ======
+document.querySelectorAll('#mainNav button').forEach(btn => {
+  btn.addEventListener('click', () => switchSection(btn.dataset.section));
+});
+
+function switchSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('section-' + id).classList.add('active');
+  document.querySelectorAll('#mainNav button').forEach(b => b.classList.remove('active'));
+  document.querySelector(`#mainNav button[data-section="${id}"]`).classList.add('active');
+  if (id === 'employees') renderEmployees();
+  if (id === 'payslip') renderPayslips();
+  if (id === 'dashboard') renderDashboard();
+  if (id === 'compliance') renderMinWages();
+  if (id === 'contributions') renderContributions();
+  if (id === 'selfcontribution') renderSelfContribution();
+  if (id === 'mwrecovery') renderMwRecovery();
+  if (id === 'settings') applySettings();
+}
+
+// ====== MONTH/YEAR HELPERS ======
+function populateMonths() {
+  const sel = document.querySelectorAll('.month-picker, #psMonth, #dashMonth, #contMonth, #scMonth, #mwMonth');
+  const yearSel = document.getElementById('psYear');
+  const contYearSel = document.getElementById('contYear');
+  const scYearSel = document.getElementById('scYear');
+  const mwYearSel = document.getElementById('mwYear');
+  const now = new Date();
+  sel.forEach(s => {
+    if (!s) return;
+    s.innerHTML = '';
+    MONTHS.forEach((m, i) => {
+      const opt = document.createElement('option');
+      opt.value = i; opt.textContent = m;
+      if (i === now.getMonth()) opt.selected = true;
+      s.appendChild(opt);
+    });
+  });
+  [yearSel, contYearSel, scYearSel, mwYearSel].forEach(ys => {
+    if (!ys) return;
+    ys.innerHTML = '';
+    for (let y = now.getFullYear(); y >= now.getFullYear() - 5; y--) {
+      const opt = document.createElement('option');
+      opt.value = y; opt.textContent = y;
+      if (y === now.getFullYear()) opt.selected = true;
+      ys.appendChild(opt);
+    }
+  });
+}
+
+// ====== DASHBOARD ======
+function renderDashboard() {
+  const emps = data.employees;
+  const settings = getSettings();
+  document.getElementById('empCount').textContent = emps.length;
+  let esi = 0, epf = 0, pt = 0;
+  emps.forEach(e => {
+    const gross = calcGross(e);
+    if (gross <= settings.esiCeil) esi++;
+    epf++;
+    const ptAmt = calcPT(gross, settings.state, e.gender);
+    if (ptAmt > 0) pt++;
+  });
+  document.getElementById('esiCount').textContent = esi;
+  document.getElementById('epfCount').textContent = epf;
+  document.getElementById('ptCount').textContent = pt;
+
+  const month = parseInt(document.getElementById('dashMonth').value);
+  const year = parseInt(document.getElementById('psYear')?.value) || new Date().getFullYear();
+  const slips = getValidPayslips().filter(p => p.month === month && p.year === year);
+  const container = document.getElementById('dashPayslips');
+  if (slips.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">📄</div><p>No payslips for ' + MONTHS[month] + ' ' + year + '</p></div>';
+  } else {
+    let html = '<table><thead><tr><th>Employee</th><th>Gross</th><th>Net Pay</th><th>ESI</th><th>EPF</th><th>PT</th></tr></thead><tbody>';
+    slips.forEach(s => {
+      html += `<tr><td>${s.empName || s.empCode}</td><td>₹${s.gross?.toFixed(0)}</td><td><strong>₹${s.netPay?.toFixed(0)}</strong></td><td>₹${(s.esiEmp || 0).toFixed(0)}</td><td>₹${(s.epfEmp || 0).toFixed(0)}</td><td>₹${(s.profTax || 0).toFixed(0)}</td></tr>`;
+    });
+    html += '</tbody></table>';
+    container.innerHTML = html;
+  }
+}
+
+// ====== EMPLOYEES ======
+function renderEmployees() {
+  const search = document.getElementById('empSearch').value.toLowerCase();
+  const dept = document.getElementById('empFilterDept').value;
+  const settings = getSettings();
+  let filtered = data.employees.filter(e => {
+    const matchSearch = !search || e.name.toLowerCase().includes(search) || e.code.toLowerCase().includes(search);
+    const matchDept = !dept || e.department === dept;
+    return matchSearch && matchDept;
+  });
+  const tbody = document.getElementById('empTableBody');
+  const empty = document.getElementById('empEmpty');
+  const deptSet = new Set(data.employees.map(e => e.department));
+  const deptSel = document.getElementById('empFilterDept');
+  const curVal = deptSel.value;
+  deptSel.innerHTML = '<option value="">All Departments</option>';
+  [...deptSet].sort().forEach(d => {
+    const opt = document.createElement('option');
+    opt.value = d; opt.textContent = d;
+    deptSel.appendChild(opt);
+  });
+  deptSel.value = curVal;
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = ''; empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+  tbody.innerHTML = filtered.map(e => {
+    const gross = calcGross(e);
+    const esi = gross <= settings.esiCeil ? (gross * ESIC_EMP_RATE) : 0;
+    const epfOptedOut = e.basic > settings.epfCeil && e.epfOptOut;
+    const epfWages = epfOptedOut ? 0 : Math.min(e.basic, settings.epfCeil);
+    const epf = epfWages * EPF_EMP_RATE;
+    const pt = calcPT(gross, settings.state, e.gender);
+    const mwAlert = checkMinWage(gross, e.designation);
+    const nameBadge = mwAlert ? `<strong>${e.name}</strong> <span class="badge badge-orange" title="Below min wage by ₹${mwAlert.shortfall}">⚠ MW</span>` : `<strong>${e.name}</strong>`;
+    const selfBadge = e.selfContribute ? ' <span class="badge badge-blue" style="background:#e8eaf6;color:#283593;">Self</span>' : '';
+    const mwBadge = e.mwRecovery ? ' <span class="badge badge-orange" style="background:#fff3e0;color:#e65100;">MW Rec</span>' : '';
+    return `<tr>
+      <td>${e.code}</td>
+      <td>${nameBadge}${selfBadge}${mwBadge}</td>
+      <td>${e.designation || '-'}</td>
+      <td>${e.department || '-'}</td>
+      <td>₹${e.basic}${mwAlert ? `<br><span style="font-size:0.65rem;color:#e74c3c;">↓ ₹${mwAlert.shortfall} below min</span>` : ''}</td>
+      <td>₹${gross.toFixed(0)}</td>
+      <td>${esi > 0 ? '₹'+esi.toFixed(0) : '<span class="badge badge-blue">Exempt</span>'}</td>
+      <td>${epf > 0 ? '₹'+epf.toFixed(0) : epfOptedOut ? '<span class="badge badge-orange">Opt-out</span>' : '<span class="badge badge-blue">Exempt</span>'}</td>
+      <td>${pt > 0 ? '₹'+pt : '<span class="badge badge-blue">Nil</span>'}</td>
+      <td>
+        <button class="btn btn-sm btn-outline" onclick="editEmployee('${e.id}')">Edit</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEmployee('${e.id}')">Del</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function showEmployeeModal(emp) {
+  document.getElementById('empModal').classList.add('show');
+  document.getElementById('empModalTitle').textContent = emp ? 'Edit Employee' : 'Add Employee';
+  document.getElementById('empEditId').value = emp ? emp.id : '';
+  document.getElementById('empName').value = emp ? emp.name : '';
+  document.getElementById('empCode').value = emp ? emp.code : '';
+  document.getElementById('empDesignation').value = emp ? (emp.designation || '') : '';
+  document.getElementById('empDept').value = emp ? (emp.department || 'General') : 'General';
+  document.getElementById('empDoj').value = emp ? (emp.doj || '') : '';
+  document.getElementById('empGender').value = emp ? (emp.gender || 'male') : 'male';
+  document.getElementById('empUan').value = emp ? (emp.uan || '') : '';
+  document.getElementById('empEsicNo').value = emp ? (emp.esicNo || '') : '';
+  document.getElementById('empBank').value = emp ? (emp.bank || '') : '';
+  document.getElementById('empIfsc').value = emp ? (emp.ifsc || '') : '';
+  document.getElementById('empEpfOptOut').checked = emp ? (emp.epfOptOut || false) : false;
+  document.getElementById('empSelfContribute').checked = emp ? (emp.selfContribute || false) : false;
+  document.getElementById('empBasic').value = emp ? emp.basic : 10000;
+  updateEmpMinWage();
+  document.getElementById('empHra').value = emp ? (emp.hra || 0) : 4000;
+  document.getElementById('empConv').value = emp ? (emp.conv || 0) : 1600;
+  document.getElementById('empMed').value = emp ? (emp.med || 0) : 1250;
+  document.getElementById('empSpecial').value = emp ? (emp.special || 0) : 0;
+  document.getElementById('empOther').value = emp ? (emp.other || 0) : 0;
+  document.getElementById('empActualSalary').value = emp ? (emp.actualSalary || '') : '';
+  document.getElementById('empMwRecovery').checked = emp ? (emp.mwRecovery || false) : false;
+}
+
+function closeEmployeeModal() {
+  document.getElementById('empModal').classList.remove('show');
+}
+
+function saveEmployee() {
+  const id = document.getElementById('empEditId').value;
+  const name = document.getElementById('empName').value.trim();
+  const code = document.getElementById('empCode').value.trim();
+  const basic = parseFloat(document.getElementById('empBasic').value) || 0;
+  if (!name) { toast('Employee name is required', 'error'); return; }
+  if (!code) { toast('Employee code is required', 'error'); return; }
+  if (isCodeTaken(code, id)) { toast('Employee code "' + code + '" already exists', 'error'); return; }
+  if (basic < 100) { toast('Basic salary seems too low', 'error'); return; }
+  const totalSal = basic + parseFloat(document.getElementById('empHra').value || 0) + parseFloat(document.getElementById('empConv').value || 0) + parseFloat(document.getElementById('empMed').value || 0) + parseFloat(document.getElementById('empSpecial').value || 0) + parseFloat(document.getElementById('empOther').value || 0);
+  const mwAlert = checkMinWage(totalSal, document.getElementById('empDesignation').value);
+  if (mwAlert) toast('⚠ Warning: Gross ₹' + totalSal.toFixed(0) + ' is below minimum wage ₹' + mwAlert.minWage.toFixed(0) + ' for "' + document.getElementById('empDesignation').value + '" (shortfall ₹' + mwAlert.shortfall + ')', 'error');
+
+  const emp = {
+    id: id || generateId(),
+    name, code,
+    designation: document.getElementById('empDesignation').value,
+    department: document.getElementById('empDept').value,
+    doj: document.getElementById('empDoj').value,
+    gender: document.getElementById('empGender').value,
+    uan: document.getElementById('empUan').value.trim(),
+    esicNo: document.getElementById('empEsicNo').value.trim(),
+    bank: document.getElementById('empBank').value.trim(),
+    ifsc: document.getElementById('empIfsc').value.trim(),
+    epfOptOut: document.getElementById('empEpfOptOut').checked,
+    selfContribute: document.getElementById('empSelfContribute').checked,
+    basic: basic,
+    hra: parseFloat(document.getElementById('empHra').value) || 0,
+    conv: parseFloat(document.getElementById('empConv').value) || 0,
+    med: parseFloat(document.getElementById('empMed').value) || 0,
+    special: parseFloat(document.getElementById('empSpecial').value) || 0,
+    other: parseFloat(document.getElementById('empOther').value) || 0,
+    actualSalary: parseFloat(document.getElementById('empActualSalary').value) || undefined,
+    mwRecovery: document.getElementById('empMwRecovery').checked
+  };
+
+  const isNew = !id;
+  if (id) {
+    const idx = data.employees.findIndex(e => e.id === id);
+    if (idx >= 0) data.employees[idx] = emp;
+  } else {
+    data.employees.push(emp);
+  }
+  if (isNew) {
+    const now = new Date();
+    const settings = getSettings();
+    const ps = computePayslip(emp, now.getMonth(), now.getFullYear(), settings);
+    data.payslips.push(ps);
+  }
+  saveData();
+  closeEmployeeModal();
+  renderEmployees();
+  renderDashboard();
+  toast(isNew ? 'Employee added with payslip for ' + MONTHS[new Date().getMonth()] : 'Employee updated', 'success');
+}
+
+function editEmployee(id) {
+  const emp = data.employees.find(e => e.id === id);
+  if (emp) showEmployeeModal(emp);
+}
+
+function deleteEmployee(id) {
+  if (!confirm('Delete this employee?')) return;
+  data.employees = data.employees.filter(e => e.id !== id);
+  data.payslips = data.payslips.filter(p => p.empId !== id);
+  saveData();
+  renderEmployees();
+  renderDashboard();
+  toast('Employee and associated payslips deleted', 'success');
+}
+
+function generateId() {
+  return 'EMP' + Date.now().toString(36).toUpperCase();
+}
+
+function calcGross(emp) {
+  return emp.basic + (emp.hra || 0) + (emp.conv || 0) + (emp.med || 0) + (emp.special || 0) + (emp.other || 0);
+}
+
+function daysInMonth(month, year) {
+  return new Date(year, month + 1, 0).getDate();
+}
+
+function getValidPayslips() {
+  const activeIds = new Set(data.employees.map(e => e.id));
+  return data.payslips.filter(p => activeIds.has(p.empId));
+}
+
+// ====== MINIMUM WAGE CHECK ======
+const DESIG_TO_MINWAGE = {
+  'Watchman': 'watchman', 'Security Guard': 'watchman',
+  'Sweeper': 'sweeper', 'Cleaner': 'sweeper',
+  'Store Keeper': 'storeKeeper', 'Accountant': 'storeKeeper', 'Clerk': 'storeKeeper', 'Supervisor': 'storeKeeper',
+  'Cashier': 'storeKeeper', 'Computer Operator': 'storeKeeper',
+  'Attender': 'attender', 'Peon': 'attender', 'Office Boy': 'attender', 'Helper': 'attender',
+  'Gardener': 'gardener',
+  'Manager': 'supervisor',
+  'Preacher': 'supervisor',
+  'Donations Collector': 'storeKeeper',
+  'Hundi Opener': 'storeKeeper',
+  'Flower Decorator': 'unskilled',
+  'Record Keeper': 'storeKeeper',
+  'Priest': 'priest', 'Assistant Priest': 'assistantPriest',
+  'Cook': 'cook', 'Assistant Cook': 'assistantCook'
+};
+
+function getEffectiveState() {
+  const mwStateEl = document.getElementById('mwState');
+  if (mwStateEl) return mwStateEl.value;
+  const settingsState = getSettings().state;
+  return settingsState === 'andhrapradesh' ? 'ap' : 'central';
+}
+
+function checkMinWage(gross, designation, stateOverride, zoneOverride) {
+  const state = stateOverride || getEffectiveState();
+  if (state === 'ap') {
+    const apKey = AP_DESIG_TO_MINWAGE[designation];
+    if (apKey) {
+      const zone = zoneOverride || getMwZone();
+      const apMw = AP_MIN_WAGES_MONTHLY[apKey];
+      if (apMw) {
+        const minWage = apMw.rates[zone] || apMw.rates[apMw.zones[0]] || 0;
+        if (minWage > 0 && gross < minWage) return { minWage, shortfall: minWage - gross };
+        return null;
+      }
+    }
+  }
+  const key = DESIG_TO_MINWAGE[designation];
+  if (!key) return null;
+  const areaEl = document.getElementById('compArea');
+  const area = areaEl ? areaEl.value : 'C';
+  let minWage = 0;
+  const mw = MIN_WAGES_MONTHLY[key];
+  if (mw && mw[area]) minWage = mw[area];
+  if (designation === 'Sweeper' || designation === 'Cleaner') {
+    const stateMw = MIN_WAGES_MONTHLY.sweeperState;
+    if (stateMw && stateMw[area] && stateMw[area] < minWage) minWage = stateMw[area];
+  }
+  if (minWage > 0 && gross < minWage) return { minWage, shortfall: minWage - gross };
+  return null;
+}
+
+function getMinWageForDesig(designation, area, stateOverride, zoneOverride) {
+  const state = stateOverride || getEffectiveState();
+  if (state === 'ap') {
+    const apKey = AP_DESIG_TO_MINWAGE[designation];
+    if (apKey) {
+      const zone = zoneOverride || getMwZone();
+      const apMw = AP_MIN_WAGES_MONTHLY[apKey];
+      if (apMw) return apMw.rates[zone] || apMw.rates[apMw.zones[0]] || 0;
+    }
+  }
+  const key = DESIG_TO_MINWAGE[designation];
+  if (!key) return null;
+  const mw = MIN_WAGES_MONTHLY[key];
+  if (!mw) return null;
+  return mw[area] || 0;
+}
+
+function getStateMinWage(desig, area) {
+  if (getEffectiveState() === 'ap') {
+    const apKey = AP_DESIG_TO_MINWAGE[desig];
+    if (apKey) {
+      const zone = getMwZone();
+      const apMw = AP_MIN_WAGES_MONTHLY[apKey];
+      if (apMw) return apMw.rates[zone] || apMw.rates[apMw.zones[0]] || null;
+    }
+  }
+  if (desig === 'Sweeper' || desig === 'Cleaner') return MIN_WAGES_MONTHLY.sweeperState?.[area] || null;
+  if (desig === 'Peon' || desig === 'Attender' || desig === 'Helper') return MIN_WAGES_MONTHLY.sweeperState?.[area] || null;
+  return null;
+}
+
+function updateEmpMinWage() {
+  const el = document.getElementById('empMinWageInfo');
+  const desig = document.getElementById('empDesignation').value;
+  if (!desig) { el.innerHTML = ''; return; }
+  const area = document.getElementById('compArea')?.value || 'C';
+  const state = getEffectiveState();
+  const centralMw = getMinWageForDesig(desig, area);
+  const stateMw = getStateMinWage(desig, area);
+  const basic = parseFloat(document.getElementById('empBasic').value) || 0;
+  const hra = parseFloat(document.getElementById('empHra').value) || 0;
+  const conv = parseFloat(document.getElementById('empConv').value) || 0;
+  const med = parseFloat(document.getElementById('empMed').value) || 0;
+  const special = parseFloat(document.getElementById('empSpecial').value) || 0;
+  const other = parseFloat(document.getElementById('empOther').value) || 0;
+  const total = basic + hra + conv + med + special + other;
+  const effectiveMw = stateMw || centralMw;
+  let html = '';
+  if (state === 'ap') {
+    const apKey = AP_DESIG_TO_MINWAGE[desig];
+    const zone = getMwZone();
+    if (apKey) {
+      const apCat = AP_MIN_WAGES_MONTHLY[apKey];
+      if (apCat) html += `AP (Zone ${zone}): <strong>₹${(stateMw || centralMw || 0).toFixed(0)}</strong>/mo (${apCat.label}) `;
+    }
+  } else {
+    if (centralMw) html += `Central: <strong>₹${centralMw.toFixed(0)}</strong>/mo `;
+    if (stateMw) html += `| State: <strong>₹${stateMw.toFixed(0)}</strong>/mo `;
+  }
+  if (effectiveMw) {
+    const ok = total >= effectiveMw;
+    html += `<br><span style="font-weight:600;">Gross: ₹${total.toFixed(0)}</span> ${ok ? '<span style="color:#27ae60;">✓ Meets min wage</span>' : '<span style="color:#e74c3c;">⚠ Below by ₹' + (effectiveMw - total).toFixed(0) + '</span>'}`;
+  }
+  el.innerHTML = html || '';
+}
+
+// ====== PROFESSIONAL TAX ======
+function calcPT(gross, state, gender) {
+  state = state || 'karnataka';
+  const s = PT_SLABS[state];
+  if (!s || state === 'other') return 0;
+  if (s.gender_exempt && gender === 'female' && gross <= s.gender_exempt) return 0;
+  if (state === 'karnataka' || state === 'gujarat' || state === 'westbengal') {
+    if (gross <= s.exemption) return 0;
+    return s.monthly;
+  }
+  if (state === 'maharashtra') {
+    if (gender === 'female' && gross <= 25000) return 0;
+    if (gross <= 7500) return 0;
+    if (gross <= 10000) return 175;
+    return 200;
+  }
+  if (state === 'telangana' || state === 'andhrapradesh') {
+    if (gross <= s.exemption) return 0;
+    if (gross <= 20000) return 150;
+    return 200;
+  }
+  if (state === 'tamilnadu' || state === 'kerala') {
+    return 200;
+  }
+  return 0;
+}
+
+// ====== CALCULATOR ======
+function runCalculator() {
+  const basic = parseFloat(document.getElementById('calcBasic').value) || 0;
+  const hra = parseFloat(document.getElementById('calcHra').value) || 0;
+  const conv = parseFloat(document.getElementById('calcConv').value) || 0;
+  const med = parseFloat(document.getElementById('calcMed').value) || 0;
+  const special = parseFloat(document.getElementById('calcSpecial').value) || 0;
+  const state = document.getElementById('calcState').value;
+  const vpfPct = parseInt(document.getElementById('calcVPF').value) || 0;
+  const esicOpt = document.getElementById('calcESIC').value;
+  const calcEpfOptOut = document.getElementById('calcEpfOptOut').checked;
+  const settings = getSettings();
+
+  const gross = basic + hra + conv + med + special;
+  const esiCeil = settings.esiCeil;
+  const epfCeil = settings.epfCeil;
+
+  const applyESIC = esicOpt === 'auto' ? (gross <= esiCeil) : (esicOpt === 'yes');
+  const esiEmp = applyESIC ? (gross * ESIC_EMP_RATE) : 0;
+  const esiEmployer = applyESIC ? (gross * ESIC_EMPLOYER_RATE) : 0;
+
+  const epfOptedOut = basic > epfCeil && calcEpfOptOut;
+  const epfWages = epfOptedOut ? 0 : Math.min(basic, epfCeil);
+  const epfEmp = epfWages * EPF_EMP_RATE;
+  const vpfAmt = epfOptedOut ? 0 : (epfWages * vpfPct / 100);
+  const totalPfEmp = epfEmp + vpfAmt;
+  const epfEmployer = epfWages * EPF_ER_RATE;
+  const epsEmployer = epfOptedOut ? 0 : Math.min(epfWages * EPS_RATE, 1250);
+  const epfInEpfEmployer = epfEmployer - epsEmployer;
+  const edliEmployer = epfWages * EDLI_RATE;
+  const edliAdminEmployer = epfWages * EDLI_ADMIN_RATE;
+
+  const profTax = calcPT(gross, state, 'male');
+  const calcSelfMode = document.getElementById('calcSelfContribute').checked;
+  const employerTotal = esiEmployer + epfEmployer + edliEmployer + edliAdminEmployer;
+  let totalDed, netPay, amountToCollect;
+  if (calcSelfMode) {
+    amountToCollect = esiEmp + totalPfEmp + employerTotal + profTax;
+    totalDed = esiEmp + totalPfEmp + profTax;
+    netPay = gross - totalDed;
+  } else {
+    amountToCollect = 0;
+    totalDed = esiEmp + totalPfEmp + profTax;
+    netPay = gross - totalDed;
+  }
+
+  const rows = [
+    ['Basic + DA', basic],
+    ['HRA', hra],
+    ['Conveyance', conv],
+    ['Medical', med],
+    ['Special Allowance', special],
+    ['<strong>Gross Salary</strong>', gross],
+    ['<hr style="margin:0">', ''],
+    ...(calcSelfMode ? [
+      ['<span style="color:#5c6bc0;">→ ESIC (Emp 0.75%) [To Collect]</span>', -amountToCollect],
+    ] : [
+      ['ESI (Employee) ' + (applyESIC ? '0.75%' : '(N/A)'), -esiEmp],
+      ['EPF (Employee 12%)', -epfEmp],
+      ['VPF ' + (vpfPct > 0 ? '('+vpfPct+'%)' : ''), -vpfAmt],
+      ['Professional Tax', -profTax],
+    ]),
+    ['<hr style="margin:0">', ''],
+    ['<strong>Total Deductions</strong>', -(totalDed)],
+    ['<hr style="margin:0">', ''],
+    ['<strong>NET TAKE HOME</strong>', netPay]
+  ];
+  if (calcSelfMode) {
+    rows.splice(rows.length - 3, 0,
+      ['<span style="color:#5c6bc0;">Amount to Collect from Employee</span>', -(amountToCollect)]
+    );
+  }
+  document.getElementById('calcResults').innerHTML = rows.map(r =>
+    `<tr><td>${r[0]}</td><td class="text-right">${typeof r[1] === 'number' ? (r[1] < 0 ? '-₹'+Math.abs(r[1]).toFixed(0) : '₹'+r[1].toFixed(0)) : r[1]}</td></tr>`
+  ).join('');
+  const calcStateForMw = document.getElementById('calcState').value === 'andhrapradesh' ? 'ap' : 'central';
+  const calcMw = checkMinWage(gross, document.getElementById('calcDesig')?.value || 'Watchman', calcStateForMw, document.getElementById('calcZone')?.value || 'I');
+  document.getElementById('calcTakeHome').innerHTML = 'Net Take Home: <span style="font-size:1.4rem;">₹' + netPay.toFixed(0) + '</span> /month' + (calcMw ? '<br><span style="font-size:0.8rem;color:#e74c3c;">⚠ Below minimum wage by ₹' + calcMw.shortfall + ' (min: ₹' + calcMw.minWage + ')</span>' : '');
+}
+
+function generatePayslipFromCalc() {
+  const basic = parseFloat(document.getElementById('calcBasic').value) || 0;
+  const hra = parseFloat(document.getElementById('calcHra').value) || 0;
+  const conv = parseFloat(document.getElementById('calcConv').value) || 0;
+  const med = parseFloat(document.getElementById('calcMed').value) || 0;
+  const special = parseFloat(document.getElementById('calcSpecial').value) || 0;
+  const name = document.getElementById('calcName').value || 'Sample Employee';
+  const state = document.getElementById('calcState').value;
+  const settings = getSettings();
+  const epfOptOut = document.getElementById('calcEpfOptOut').checked;
+  const calcSelfContribute = document.getElementById('calcSelfContribute').checked;
+  const monthly = {
+    name, code: 'CALC', designation: 'Employee', department: 'General',
+    basic, hra, conv, med, special, other: 0,
+    gender: 'male', uan: '', esicNo: '', bank: '', ifsc: '', doj: '', epfOptOut, selfContribute: calcSelfContribute
+  };
+  const gross = calcGross(monthly);
+  const ps = computePayslip(monthly, new Date().getMonth(), new Date().getFullYear(), settings);
+  showPayslipModal(ps);
+}
+
+// ====== PAYSLIP ======
+function computePayslip(emp, month, year, settings) {
+  const gross = calcGross(emp);
+  const esiCeil = settings.esiCeil || 21000;
+  const epfCeil = settings.epfCeil || 15000;
+  const applyESIC = gross <= esiCeil;
+  const epfOptedOut = emp.basic > epfCeil && emp.epfOptOut;
+  const epfWages = epfOptedOut ? 0 : Math.min(emp.basic, epfCeil);
+  const selfContribute = emp.selfContribute || false;
+
+  const esiEmp = applyESIC ? (gross * ESIC_EMP_RATE) : 0;
+  const esiEmployer = applyESIC ? (gross * ESIC_EMPLOYER_RATE) : 0;
+
+  const epfEmp = epfWages * EPF_EMP_RATE;
+  const epfEmployer = epfWages * EPF_ER_RATE;
+  const epsEmployer = epfOptedOut ? 0 : Math.min(epfWages * EPS_RATE, 1250);
+  const epfInEpfEmployer = epfEmployer - epsEmployer;
+  const edliEmployer = epfWages * EDLI_RATE;
+  const edliAdminEmployer = epfWages * EDLI_ADMIN_RATE;
+
+  const profTax = calcPT(gross, settings.state, emp.gender);
+
+  let totalDed, netPay, amountToCollect;
+  if (selfContribute) {
+    const employerTotal = esiEmployer + epfEmployer + edliEmployer + edliAdminEmployer;
+    amountToCollect = esiEmp + epfEmp + employerTotal + profTax;
+    totalDed = esiEmp + epfEmp + profTax;
+    netPay = gross - totalDed;
+  } else {
+    amountToCollect = 0;
+    totalDed = esiEmp + epfEmp + profTax;
+    netPay = gross - totalDed;
+  }
+
+  const mwRecovery = emp.mwRecovery && emp.actualSalary && emp.actualSalary < gross ? gross - emp.actualSalary : 0;
+  if (mwRecovery > 0) {
+    if (selfContribute) {
+      amountToCollect += mwRecovery;
+    }
+    totalDed += mwRecovery;
+    netPay = gross - totalDed;
+  }
+
+  return {
+    empId: emp.id || emp.code,
+    empCode: emp.code,
+    empName: emp.name,
+    empDesignation: emp.designation || '',
+    empDepartment: emp.department || '',
+    empUan: emp.uan || '',
+    empEsicNo: emp.esicNo || '',
+    empBank: emp.bank || '',
+    empIfsc: emp.ifsc || '',
+    month, year,
+    basic: emp.basic,
+    hra: emp.hra || 0,
+    conv: emp.conv || 0,
+    med: emp.med || 0,
+    special: emp.special || 0,
+    other: emp.other || 0,
+    gross,
+    esiEmp, esiEmployer,
+    epfEmp, epfEmployer, epsEmployer, epfInEpfEmployer,
+    edliEmployer, edliAdminEmployer,
+    profTax,
+    totalDed,
+    netPay,
+    amountToCollect,
+    epfOptedOut,
+    selfContribute,
+    mwRecovery,
+    generatedAt: new Date().toISOString()
+  };
+}
+
+function generateAllPayslips() {
+  const month = parseInt(document.getElementById('psMonth').value);
+  const year = parseInt(document.getElementById('psYear').value);
+  const settings = getSettings();
+  if (data.employees.length === 0) {
+    toast('No employees found. Add employees first.', 'error');
+    return;
+  }
+  data.employees.forEach(emp => {
+    const key = emp.id + '-' + month + '-' + year;
+    const existing = data.payslips.findIndex(p => p.empId === emp.id && p.month === month && p.year === year);
+    const ps = computePayslip(emp, month, year, settings);
+    if (existing >= 0) {
+      data.payslips[existing] = ps;
+    } else {
+      data.payslips.push(ps);
+    }
+  });
+  saveData();
+  renderPayslips();
+  toast('Payslips generated for ' + MONTHS[month] + ' ' + year, 'success');
+}
+
+function renderPayslips() {
+  const month = parseInt(document.getElementById('psMonth').value);
+  const year = parseInt(document.getElementById('psYear').value);
+  const filterEmp = document.getElementById('psFilterEmp').value;
+  const settings = getSettings();
+
+  const empSel = document.getElementById('psFilterEmp');
+  const curVal = empSel.value;
+  empSel.innerHTML = '<option value="">All Employees</option>';
+  data.employees.forEach(e => {
+    const opt = document.createElement('option');
+    opt.value = e.id; opt.textContent = e.name;
+    empSel.appendChild(opt);
+  });
+  empSel.value = curVal;
+
+  let slips = getValidPayslips().filter(p => p.month === month && p.year === year);
+  if (filterEmp) slips = slips.filter(p => p.empId === filterEmp);
+
+  const container = document.getElementById('psList');
+  const empty = document.getElementById('psEmpty');
+  if (slips.length === 0) {
+    container.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+  container.innerHTML = `
+    <table>
+      <thead><tr>
+        <th>Employee</th><th>Code</th><th>Basic</th><th>Gross</th><th>ESI (Emp)</th><th>EPF (Emp)</th><th>PT</th><th>Net Pay</th><th>Action</th>
+      </tr></thead>
+      <tbody>
+        ${slips.map(p => {
+          return `<tr>
+          <td><strong>${p.empName}</strong></td>
+          <td>${p.empCode}</td>
+          <td>₹${p.basic.toFixed(0)}</td>
+          <td>₹${p.gross.toFixed(0)}</td>
+          <td>${p.esiEmp > 0 ? '₹'+p.esiEmp.toFixed(0) : '-'}</td>
+          <td>${p.epfEmp > 0 ? '₹'+p.epfEmp.toFixed(0) : '-'}</td>
+          <td>${p.profTax > 0 ? '₹'+p.profTax.toFixed(0) : '-'}</td>
+          <td><strong>₹${p.netPay.toFixed(0)}</strong></td>
+          <td><button class="btn btn-sm btn-primary" onclick="showPayslipModalById('${p.empId}',${p.month},${p.year})">View</button></td>
+        </tr>`;
+        }).join('')}
+      </tbody>
+    </table>`;
+}
+
+function showPayslipModalById(empId, month, year) {
+  const ps = getValidPayslips().find(p => p.empId === empId && p.month === month && p.year === year);
+  if (ps) showPayslipModal(ps);
+}
+
+function showPayslipModal(ps) {
+  const s = getSettings();
+  let html = `<div class="payslip" id="payslipContent">
+    <h2>${s.company}</h2>
+    <div class="subtitle">${s.address} | ${s.city}<br>Payslip for ${MONTHS[ps.month]} ${ps.year}</div>
+    <div class="details">
+      <div><strong>Employee Name:</strong> ${ps.empName}</div>
+      <div><strong>Employee Code:</strong> ${ps.empCode}</div>
+      <div><strong>Designation:</strong> ${ps.empDesignation || '-'}</div>
+      <div><strong>Department:</strong> ${ps.empDepartment || '-'}</div>
+      <div><strong>UAN:</strong> ${ps.empUan || '-'}</div>
+      <div><strong>ESIC No.:</strong> ${ps.empEsicNo || '-'}</div>
+      <div><strong>Bank:</strong> ${ps.empBank || '-'} / ${ps.empIfsc || '-'}</div>
+      <div><strong>Pay Days:</strong> ${daysInMonth(ps.month, ps.year)}</div>
+    </div>
+    <table>
+      <thead><tr><th>Earnings</th><th class="text-right">Amount</th><th>Deductions</th><th class="text-right">Amount</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Basic + DA</td><td class="text-right">₹${ps.basic.toFixed(0)}</td>
+          <td>ESI (Employee) ${ps.esiEmp > 0 ? '0.75%' : ''}</td><td class="text-right">${ps.esiEmp > 0 ? '₹'+ps.esiEmp.toFixed(0) : '-'}</td>
+        </tr>
+        <tr>
+          <td>HRA</td><td class="text-right">₹${ps.hra.toFixed(0)}</td>
+          <td>EPF (Employee 12%)${ps.epfOptedOut ? '<br><span style="font-size:0.7rem;color:#856404;">(Opted out)</span>' : ''}</td><td class="text-right">${ps.epfEmp > 0 ? '₹'+ps.epfEmp.toFixed(0) : '-'}</td>
+        </tr>
+        <tr>
+          <td>Conveyance</td><td class="text-right">₹${ps.conv.toFixed(0)}</td>
+          <td>Professional Tax</td><td class="text-right">${ps.profTax > 0 ? '₹'+ps.profTax.toFixed(0) : '-'}</td>
+        </tr>
+        <tr><td>Medical</td><td class="text-right">₹${ps.med.toFixed(0)}</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+        ${ps.mwRecovery > 0 ? `<tr><td>&nbsp;</td><td>&nbsp;</td><td>MW Top-up Recovery</td><td class="text-right" style="color:#e74c3c;">-₹${ps.mwRecovery.toFixed(0)}</td></tr>` : ''}
+        <tr><td>Special Allowance</td><td class="text-right">₹${ps.special.toFixed(0)}</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+        ${ps.other > 0 ? `<tr><td>Other</td><td class="text-right">₹${ps.other.toFixed(0)}</td><td>&nbsp;</td><td>&nbsp;</td></tr>` : ''}
+        <tr class="total-row">
+          <td><strong>Gross Earnings</strong></td><td class="text-right"><strong>₹${ps.gross.toFixed(0)}</strong></td>
+          <td><strong>Total Deductions</strong></td><td class="text-right"><strong>₹${ps.totalDed.toFixed(0)}</strong></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="net-pay">Net Pay: ₹${ps.netPay.toFixed(0)}</div>
+    <table style="font-size:0.75rem;color:#666;">
+      <tr><th colspan="2">Employer Contributions</th><th class="text-right">Amount</th></tr>
+      <tr><td>ESI (Employer 3.25%)</td><td class="text-right">₹${ps.esiEmployer.toFixed(0)}</td><td rowspan="5" style="border:none;"></td></tr>
+      <tr><td>EPF (Employer 12%)</td><td class="text-right">₹${ps.epfEmployer.toFixed(0)}</td></tr>
+      <tr><td>&nbsp;&nbsp;EPS (8.33%)</td><td class="text-right">₹${ps.epsEmployer.toFixed(0)}</td></tr>
+      <tr><td>&nbsp;&nbsp;EPF (3.67%)</td><td class="text-right">₹${ps.epfInEpfEmployer.toFixed(0)}</td></tr>
+      <tr><td>EDLI (0.5%) + Admin (0.5%)</td><td class="text-right">₹${(ps.edliEmployer + ps.edliAdminEmployer).toFixed(0)}</td></tr>
+      <tr><td><strong>Total Employer Cost</strong></td><td class="text-right"><strong>₹${(ps.gross + ps.esiEmployer + ps.epfEmployer + ps.edliEmployer + ps.edliAdminEmployer).toFixed(0)}</strong></td></tr>
+    </table>
+    <div style="margin-top:1rem;font-size:0.7rem;color:#999;text-align:center;">
+      This is a computer-generated payslip. Generated on ${new Date(ps.generatedAt).toLocaleDateString('en-IN')}
+    </div>
+  </div>`;
+  document.getElementById('psModalContent').innerHTML = html;
+  currentPsView = ps;
+  document.getElementById('psModal').classList.add('show');
+}
+
+function closePsModal() {
+  document.getElementById('psModal').classList.remove('show');
+}
+
+function printPayslip() {
+  const content = document.getElementById('payslipContent');
+  if (!content) return;
+  const win = window.open('', '_blank');
+  win.document.write(`<!DOCTYPE html><html><head><title>Payslip</title><style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; color: #2c3e50; padding: 2rem; }
+    .payslip { max-width: 800px; margin: 0 auto; border: 2px solid #1a5276; padding: 2.5rem; }
+    .payslip h2 { text-align: center; color: #1a5276; margin-bottom: 0.25rem; }
+    .payslip .subtitle { text-align: center; color: #666; font-size: 0.8rem; margin-bottom: 1.5rem; }
+    .payslip .details { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1rem; }
+    .payslip .details strong { display: inline-block; min-width: 110px; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.85rem; }
+    th, td { padding: 0.4rem 0.75rem; text-align: left; border-bottom: 1px solid #dce1e8; }
+    th { background: #f0f4f8; font-weight: 600; }
+    .text-right { text-align: right; }
+    .total-row td { font-weight: 700; border-top: 2px solid #1a5276; }
+    .net-pay { text-align: center; font-size: 1.2rem; font-weight: 700; color: #27ae60; margin: 1rem 0; padding: 0.75rem; border: 2px dashed #27ae60; border-radius: 8px; }
+    @media print { body { padding: 0; } }
+  </style></head><body>${content.outerHTML}</body></html>`);
+  win.document.close();
+  setTimeout(() => { win.print(); }, 500);
+}
+
+// ====== CONTRIBUTIONS ======
+function generateContributionData() {
+  const month = parseInt(document.getElementById('contMonth').value);
+  const year = parseInt(document.getElementById('contYear').value);
+  if (data.employees.length === 0) { toast('No employees found', 'error'); return; }
+  const settings = getSettings();
+  data.employees.forEach(emp => {
+    const existing = data.payslips.findIndex(p => p.empId === emp.id && p.month === month && p.year === year);
+    const ps = computePayslip(emp, month, year, settings);
+    if (existing >= 0) data.payslips[existing] = ps;
+    else data.payslips.push(ps);
+  });
+  saveData();
+  renderContributions();
+  toast('Contribution report generated for ' + MONTHS[month] + ' ' + year, 'success');
+}
+
+function renderContributions() {
+  const month = parseInt(document.getElementById('contMonth').value);
+  const year = parseInt(document.getElementById('contYear').value);
+  const slips = getValidPayslips().filter(p => p.month === month && p.year === year);
+
+  if (slips.length === 0) {
+    document.getElementById('contReport').innerHTML = '<div class="empty-state"><div class="icon">📊</div><p>No payslips for ' + MONTHS[month] + ' ' + year + '. Click "Generate Report" first.</p></div>';
+    return;
+  }
+
+  const totals = { emp: { esi: 0, epf: 0, pt: 0 }, employer: { esi: 0, epf: 0, eps: 0, epfInEpf: 0, edli: 0, edliAdmin: 0, totalPf: 0 }, gross: 0 };
+  let empRows = '';
+  slips.forEach(ps => {
+    totals.emp.esi += ps.esiEmp || 0;
+    totals.emp.epf += ps.epfEmp || 0;
+    totals.emp.pt += ps.profTax || 0;
+    totals.employer.esi += ps.esiEmployer || 0;
+    totals.employer.epf += ps.epfEmployer || 0;
+    totals.employer.eps += ps.epsEmployer || 0;
+    totals.employer.epfInEpf += ps.epfInEpfEmployer || 0;
+    totals.employer.edli += ps.edliEmployer || 0;
+    totals.employer.edliAdmin += ps.edliAdminEmployer || 0;
+    totals.gross += ps.gross || 0;
+    const empTotalDed = (ps.esiEmp || 0) + (ps.epfEmp || 0) + (ps.profTax || 0);
+    const modeBadge = ps.selfContribute ? '<span class="badge badge-blue" style="background:#e8eaf6;color:#283593;">Self</span>' : '<span class="badge badge-green">Normal</span>';
+    empRows += `<tr>
+      <td>${ps.empName} ${modeBadge}</td><td>₹${ps.gross.toFixed(0)}</td>
+      <td>${ps.esiEmp > 0 ? '₹'+ps.esiEmp.toFixed(0) : '-'}</td>
+      <td>${ps.epfEmp > 0 ? '₹'+ps.epfEmp.toFixed(0) : '-'}</td>
+      <td>${ps.profTax > 0 ? '₹'+ps.profTax.toFixed(0) : '-'}</td>
+      <td><strong>₹${empTotalDed.toFixed(0)}</strong></td>
+      <td>₹${ps.esiEmployer.toFixed(0)}</td>
+      <td>₹${ps.epfEmployer.toFixed(0)}</td>
+      <td>₹${(ps.edliEmployer + ps.edliAdminEmployer).toFixed(0)}</td>
+      <td><strong>₹${(ps.esiEmployer + ps.epfEmployer + ps.edliEmployer + ps.edliAdminEmployer).toFixed(0)}</strong></td>
+    </tr>`;
+  });
+
+  const grandTotalDed = totals.emp.esi + totals.emp.epf + totals.emp.pt;
+  const grandTotalEmployer = totals.employer.esi + totals.employer.epf + totals.employer.edli + totals.employer.edliAdmin;
+  const totalEmployerCost = totals.gross + grandTotalEmployer;
+  const totalESIC = totals.emp.esi + totals.employer.esi;
+  const totalEPFO = totals.emp.epf + totals.employer.epf + totals.employer.edli + totals.employer.edliAdmin;
+  const totalEPFOnly = totals.emp.epf + totals.employer.epf;
+  const totalEDLI = totals.employer.edli + totals.employer.edliAdmin;
+
+  let html = `
+    <div style="overflow-x:auto;">
+      <table>
+        <thead><tr>
+          <th>Employee</th><th>Gross</th>
+          <th colspan="3">Employee Deductions</th><th>Total Ded</th>
+          <th colspan="4">Employer Contributions</th>
+        </tr></thead>
+        <thead><tr style="font-size:0.7rem;">
+          <th></th><th></th><th>ESIC</th><th>EPF</th><th>PT</th><th></th><th>ESIC</th><th>EPF</th><th>EDLI</th><th>Total</th>
+        </tr></thead>
+        <tbody>${empRows}</tbody>
+        <tfoot style="font-weight:700;background:var(--bg);">
+          <tr>
+            <td>TOTAL (${slips.length} employees)</td><td>₹${totals.gross.toFixed(0)}</td>
+            <td>₹${totals.emp.esi.toFixed(0)}</td><td>₹${totals.emp.epf.toFixed(0)}</td><td>₹${totals.emp.pt.toFixed(0)}</td>
+            <td>₹${grandTotalDed.toFixed(0)}</td>
+            <td>₹${totals.employer.esi.toFixed(0)}</td><td>₹${totals.employer.epf.toFixed(0)}</td>
+            <td>₹${(totals.employer.edli + totals.employer.edliAdmin).toFixed(0)}</td>
+            <td>₹${grandTotalEmployer.toFixed(0)}</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <hr style="margin:1.5rem 0;border:none;border-top:1px solid var(--border);">
+    <div class="grid-3">
+      <div class="card" style="margin:0;box-shadow:none;border:1px solid var(--border);">
+        <h3 style="color:var(--danger);">Employee Contributions (Deducted from Salary)</h3>
+        <table>
+          <tr><td>ESIC (0.75%)</td><td class="text-right">₹${totals.emp.esi.toFixed(0)}</td></tr>
+          <tr><td>EPF (12%)</td><td class="text-right">₹${totals.emp.epf.toFixed(0)}</td></tr>
+          <tr><td>Professional Tax</td><td class="text-right">₹${totals.emp.pt.toFixed(0)}</td></tr>
+          <tr class="total-row"><td><strong>Total Deductions</strong></td><td class="text-right"><strong>₹${grandTotalDed.toFixed(0)}</strong></td></tr>
+        </table>
+      </div>
+      <div class="card" style="margin:0;box-shadow:none;border:1px solid var(--border);">
+        <h3 style="color:var(--primary);">Employer Contributions (Over &amp; Above Salary)</h3>
+        <table>
+          <tr><td>ESIC (3.25%)</td><td class="text-right">₹${totals.employer.esi.toFixed(0)}</td></tr>
+          <tr><td>EPF (3.67%)</td><td class="text-right">₹${totals.employer.epfInEpf.toFixed(0)}</td></tr>
+          <tr><td>EPS (8.33%)</td><td class="text-right">₹${totals.employer.eps.toFixed(0)}</td></tr>
+          <tr><td>EDLI (0.5% + 0.5% Admin)</td><td class="text-right">₹${(totals.employer.edli + totals.employer.edliAdmin).toFixed(0)}</td></tr>
+          <tr class="total-row"><td><strong>Total Employer Cost</strong></td><td class="text-right"><strong>₹${grandTotalEmployer.toFixed(0)}</strong></td></tr>
+        </table>
+      </div>
+      <div class="card" style="margin:0;box-shadow:none;border:1px solid var(--border);background:#e8f5e9;">
+        <h3 style="color:var(--success);">Summary</h3>
+        <table>
+          <tr><td>Gross Payroll</td><td class="text-right">₹${totals.gross.toFixed(0)}</td></tr>
+          <tr><td>Employee Deductions</td><td class="text-right">₹${grandTotalDed.toFixed(0)}</td></tr>
+          <tr><td>Employer Contributions</td><td class="text-right">₹${grandTotalEmployer.toFixed(0)}</td></tr>
+          <tr class="total-row"><td><strong>Total Payout (Gross + Employer)</strong></td><td class="text-right"><strong>₹${totalEmployerCost.toFixed(0)}</strong></td></tr>
+          <tr><td>Net Take-home (Employees)</td><td class="text-right"><strong>₹${(totals.gross - grandTotalDed).toFixed(0)}</strong></td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="card" style="margin-top:1.5rem;border:2px solid var(--primary);background:#e3f2fd;">
+      <h2 style="color:var(--primary);border:none;padding:0;margin-bottom:1rem;">Total Payable to Authorities</h2>
+      <div class="grid-4">
+        <div>
+          <h3 style="font-size:0.85rem;color:#1565c0;">ESIC</h3>
+          <table style="font-size:0.85rem;">
+            <tr><td>Employee (0.75%)</td><td class="text-right">₹${totals.emp.esi.toFixed(0)}</td></tr>
+            <tr><td>Employer (3.25%)</td><td class="text-right">₹${totals.employer.esi.toFixed(0)}</td></tr>
+            <tr class="total-row"><td><strong>Total ESIC</strong></td><td class="text-right"><strong style="font-size:1.1rem;color:#e65100;">₹${totalESIC.toFixed(0)}</strong></td></tr>
+          </table>
+        </div>
+        <div>
+          <h3 style="font-size:0.85rem;color:#1565c0;">EPF</h3>
+          <table style="font-size:0.85rem;">
+            <tr><td>Employee EPF (12%)</td><td class="text-right">₹${totals.emp.epf.toFixed(0)}</td></tr>
+            <tr><td>Employer EPF (3.67%)</td><td class="text-right">₹${totals.employer.epfInEpf.toFixed(0)}</td></tr>
+            <tr><td>Employer EPS (8.33%)</td><td class="text-right">₹${totals.employer.eps.toFixed(0)}</td></tr>
+            <tr class="total-row"><td><strong>Total EPF</strong></td><td class="text-right"><strong style="font-size:1rem;">₹${totalEPFOnly.toFixed(0)}</strong></td></tr>
+          </table>
+        </div>
+        <div>
+          <h3 style="font-size:0.85rem;color:#1565c0;">EDLI</h3>
+          <table style="font-size:0.85rem;">
+            <tr><td>EDLI (0.5%)</td><td class="text-right">₹${totals.employer.edli.toFixed(0)}</td></tr>
+            <tr><td>Admin Charges (0.5%)</td><td class="text-right">₹${totals.employer.edliAdmin.toFixed(0)}</td></tr>
+            <tr class="total-row"><td><strong>Total EDLI</strong></td><td class="text-right"><strong>₹${totalEDLI.toFixed(0)}</strong></td></tr>
+          </table>
+        </div>
+        <div>
+          <h3 style="font-size:0.85rem;color:#1565c0;">Professional Tax</h3>
+          <table style="font-size:0.85rem;">
+            <tr><td>PT Collected</td><td class="text-right">₹${totals.emp.pt.toFixed(0)}</td></tr>
+            <tr class="total-row"><td><strong>Total PT</strong></td><td class="text-right"><strong style="font-size:1rem;">₹${totals.emp.pt.toFixed(0)}</strong></td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="grid-4" style="margin-top:0.75rem;">
+        <div style="background:#e8f5e9;border-radius:8px;padding:1rem;text-align:center;">
+          <div style="font-size:0.8rem;color:#2e7d32;">Total ESIC</div>
+          <div style="font-size:1.5rem;font-weight:700;color:#e65100;">₹${totalESIC.toFixed(0)}</div>
+        </div>
+        <div style="background:#e8f5e9;border-radius:8px;padding:1rem;text-align:center;">
+          <div style="font-size:0.8rem;color:#2e7d32;">Total EPFO</div>
+          <div style="font-size:1.5rem;font-weight:700;color:#e65100;">₹${totalEPFO.toFixed(0)}</div>
+        </div>
+        <div style="background:#fff3e0;border-radius:8px;padding:1rem;text-align:center;">
+          <div style="font-size:0.8rem;color:#e65100;">Total PT</div>
+          <div style="font-size:1.5rem;font-weight:700;color:#e65100;">₹${totals.emp.pt.toFixed(0)}</div>
+        </div>
+        <div style="background:#e3f2fd;border-radius:8px;padding:1rem;text-align:center;">
+          <div style="font-size:0.8rem;color:var(--primary);">Grand Total All</div>
+          <div style="font-size:1.5rem;font-weight:700;color:var(--primary);">₹${(totalESIC + totalEPFO + totals.emp.pt).toFixed(0)}</div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.getElementById('contReport').innerHTML = html;
+}
+
+// ====== SELF CONTRIBUTION ======
+function generateSelfContribution() {
+  const month = parseInt(document.getElementById('scMonth').value);
+  const year = parseInt(document.getElementById('scYear').value);
+  if (data.employees.length === 0) { toast('No employees found', 'error'); return; }
+  const settings = getSettings();
+  data.employees.forEach(emp => {
+    const existing = data.payslips.findIndex(p => p.empId === emp.id && p.month === month && p.year === year);
+    const ps = computePayslip(emp, month, year, settings);
+    if (existing >= 0) data.payslips[existing] = ps;
+    else data.payslips.push(ps);
+  });
+  saveData();
+  renderSelfContribution();
+  toast('Self-contribution data generated for ' + MONTHS[month] + ' ' + year, 'success');
+}
+
+function renderSelfContribution() {
+  const month = parseInt(document.getElementById('scMonth').value);
+  const year = parseInt(document.getElementById('scYear').value);
+  const slips = getValidPayslips().filter(p => p.month === month && p.year === year && p.selfContribute);
+
+  const container = document.getElementById('scReport');
+  if (slips.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">💳</div><p>No self-contribution employees found for ' + MONTHS[month] + ' ' + year + '. Click "Generate" first or mark employees as self-contribution.</p></div>';
+    return;
+  }
+
+  let totalCollect = 0, totalGross = 0;
+  let rows = '';
+  slips.forEach(ps => {
+    totalCollect += ps.amountToCollect || 0;
+    totalGross += ps.gross || 0;
+    const emp = data.employees.find(e => e.id === ps.empId);
+    rows += `<tr>
+      <td>${ps.empName}</td>
+      <td>${ps.empCode}</td>
+      <td>₹${ps.gross.toFixed(0)}</td>
+      <td>₹${(ps.esiEmp + ps.epfEmp).toFixed(0)}</td>
+      <td>₹${(ps.esiEmployer + ps.epfEmployer + ps.edliEmployer + ps.edliAdminEmployer).toFixed(0)}</td>
+      <td>${ps.profTax > 0 ? '₹'+ps.profTax.toFixed(0) : '-'}</td>
+      <td><strong>₹${ps.amountToCollect.toFixed(0)}</strong></td>
+      <td><button class="btn btn-sm btn-primary" onclick="showPayslipModalById('${ps.empId}',${ps.month},${ps.year})">View</button></td>
+    </tr>`;
+  });
+
+  container.innerHTML = `
+    <div style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr><th>Employee</th><th>Code</th><th>Gross Paid</th><th>Emp Contrib.</th><th>Employer Contrib.</th><th>PT</th><th>Amount to Collect</th><th></th></tr>
+        </thead>
+        <tbody>${rows}</tbody>
+        <tfoot style="font-weight:700;background:var(--bg);">
+          <tr>
+            <td><strong>TOTAL (${slips.length} employees)</strong></td><td></td>
+            <td>₹${totalGross.toFixed(0)}</td><td></td><td></td><td></td>
+            <td><strong>₹${totalCollect.toFixed(0)}</strong></td><td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <div class="grid-3" style="margin-top:1.5rem;">
+      <div class="card" style="margin:0;box-shadow:none;border:1px solid var(--border);">
+        <h3 style="color:#283593;">Total Gross Paid to Employees</h3>
+        <div style="font-size:1.5rem;font-weight:700;color:var(--primary);">₹${totalGross.toFixed(0)}</div>
+      </div>
+      <div class="card" style="margin:0;box-shadow:none;border:1px solid var(--border);background:#e8eaf6;">
+        <h3 style="color:#283593;">Total Amount to Collect Back</h3>
+        <div style="font-size:1.5rem;font-weight:700;color:#283593;">₹${totalCollect.toFixed(0)}</div>
+      </div>
+      <div class="card" style="margin:0;box-shadow:none;border:1px solid var(--border);background:#e8f5e9;">
+        <h3 style="color:var(--success);">Net Effective Cost to Company</h3>
+        <div style="font-size:1.5rem;font-weight:700;color:var(--success);">₹${(totalGross - totalCollect).toFixed(0)}</div>
+        <div style="font-size:0.75rem;color:#666;">= Gross Paid − Amount Collected</div>
+      </div>
+    </div>
+    <div style="margin-top:1rem;padding:0.75rem;background:#fff8e1;border-radius:8px;border:1px solid #ffe082;font-size:0.8rem;">
+      <strong>📌 Note:</strong> These employees are on <strong>self-contribution mode</strong>. The full gross salary is paid to them, and the total contributions (employee + employer side) are to be collected back from them separately. The company remits these contributions to the respective authorities.
+    </div>
+  `;
+}
+
+// ====== MW RECOVERY (MINIMUM WAGE TOP-UP) ======
+function generateMwRecovery() {
+  const month = parseInt(document.getElementById('mwMonth').value);
+  const year = parseInt(document.getElementById('mwYear').value);
+  if (data.employees.length === 0) { toast('No employees found', 'error'); return; }
+  const settings = getSettings();
+  data.employees.forEach(emp => {
+    if (!emp.mwRecovery) return;
+    const existing = data.payslips.findIndex(p => p.empId === emp.id && p.month === month && p.year === year);
+    const ps = computePayslip(emp, month, year, settings);
+    if (existing >= 0) data.payslips[existing] = ps;
+    else data.payslips.push(ps);
+  });
+  saveData();
+  renderMwRecovery();
+  toast('MW Recovery report generated for ' + MONTHS[month] + ' ' + year, 'success');
+}
+
+function renderMwRecovery() {
+  const month = parseInt(document.getElementById('mwMonth').value);
+  const year = parseInt(document.getElementById('mwYear').value);
+  const settings = getSettings();
+  const mwEmps = data.employees.filter(e => e.mwRecovery && e.actualSalary);
+  const slips = getValidPayslips().filter(p => p.month === month && p.year === year);
+  const recoverySlips = slips.filter(p => {
+    const emp = data.employees.find(e => e.id === p.empId);
+    return emp && emp.mwRecovery;
+  });
+
+  const container = document.getElementById('mwRecoveryReport');
+  if (mwEmps.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">🔄</div><p>No employees marked for MW Recovery. Edit an employee and enable "Minimum Wage Top-up Recovery Mode" with an "Actual Gross" amount.</p></div>';
+    return;
+  }
+  if (recoverySlips.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">🔄</div><p>No recovery data for ' + MONTHS[month] + ' ' + year + '. Click "Generate Report" first.</p></div>';
+    return;
+  }
+
+  let totalExcess = 0, totalRecovery = 0, totalGross = 0;
+  let rows = '';
+  recoverySlips.forEach(ps => {
+    const emp = data.employees.find(e => e.id === ps.empId);
+    const actualSal = emp ? (emp.actualSalary || ps.gross) : ps.gross;
+    const excess = ps.mwRecovery || 0;
+    totalExcess += excess;
+    totalRecovery += excess;
+    totalGross += ps.gross || 0;
+    rows += `<tr>
+      <td><strong>${ps.empName}</strong></td>
+      <td>${ps.empCode}</td>
+      <td>₹${actualSal.toFixed(0)}</td>
+      <td>₹${ps.gross.toFixed(0)}</td>
+      <td style="color:#e74c3c;"><strong>₹${excess.toFixed(0)}</strong></td>
+      <td>₹${(ps.esiEmp || 0).toFixed(0)}</td>
+      <td>₹${(ps.epfEmp || 0).toFixed(0)}</td>
+      <td>${ps.profTax > 0 ? '₹'+ps.profTax.toFixed(0) : '-'}</td>
+      <td><strong>₹${(ps.totalDed || 0).toFixed(0)}</strong></td>
+      <td><strong>₹${(ps.netPay || 0).toFixed(0)}</strong></td>
+      <td><button class="btn btn-sm btn-primary" onclick="showPayslipModalById('${ps.empId}',${ps.month},${ps.year})">View</button></td>
+    </tr>`;
+  });
+
+  container.innerHTML = `
+    <div style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>Employee</th><th>Code</th><th>Actual Salary</th><th>Min Wage Gross</th>
+            <th>Excess to Recover</th><th>ESIC</th><th>EPF</th><th>PT</th>
+            <th>Total Deductions</th><th>Net Pay</th><th></th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+        <tfoot style="font-weight:700;background:var(--bg);">
+          <tr>
+            <td><strong>TOTAL (${recoverySlips.length} employees)</strong></td><td></td><td></td>
+            <td>₹${totalGross.toFixed(0)}</td>
+            <td style="color:#e74c3c;"><strong>₹${totalExcess.toFixed(0)}</strong></td>
+            <td>₹${recoverySlips.reduce((s,p) => s + (p.esiEmp||0), 0).toFixed(0)}</td>
+            <td>₹${recoverySlips.reduce((s,p) => s + (p.epfEmp||0), 0).toFixed(0)}</td>
+            <td>₹${recoverySlips.reduce((s,p) => s + (p.profTax||0), 0).toFixed(0)}</td>
+            <td>₹${recoverySlips.reduce((s,p) => s + (p.totalDed||0), 0).toFixed(0)}</td>
+            <td>₹${recoverySlips.reduce((s,p) => s + (p.netPay||0), 0).toFixed(0)}</td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <div class="grid-3" style="margin-top:1.5rem;">
+      <div class="card" style="margin:0;box-shadow:none;border:1px solid var(--border);">
+        <h3 style="color:#e74c3c;">Total Excess Paid (Gross)</h3>
+        <div style="font-size:1.5rem;font-weight:700;color:#e74c3c;">₹${totalExcess.toFixed(0)}</div>
+        <div style="font-size:0.75rem;color:#666;">Min Wage Gross − Actual Salary</div>
+      </div>
+      <div class="card" style="margin:0;box-shadow:none;border:1px solid var(--border);background:#fff3e0;">
+        <h3 style="color:#e65100;">Total Amount to Collect Back</h3>
+        <div style="font-size:1.5rem;font-weight:700;color:#e65100;">₹${totalRecovery.toFixed(0)}</div>
+        <div style="font-size:0.75rem;color:#666;">This is the excess to recover from employees</div>
+      </div>
+      <div class="card" style="margin:0;box-shadow:none;border:1px solid var(--border);background:#e8f5e9;">
+        <h3 style="color:var(--success);">Effective Net Cost to Company</h3>
+        <div style="font-size:1.5rem;font-weight:700;color:var(--success);">₹${(totalGross - totalRecovery).toFixed(0)}</div>
+        <div style="font-size:0.75rem;color:#666;">= Gross Paid − Amount Collected</div>
+      </div>
+    </div>
+    <div style="margin-top:1rem;padding:0.75rem;background:#fff3e0;border-radius:8px;border:1px solid #ffcc80;font-size:0.85rem;">
+      <strong>How it works:</strong> For employees with actual salary below minimum wage, the company shows the minimum wage gross on the payslip (compliance). The excess (min wage gross − actual salary) is recovered from the employee as a deduction.<br>
+      <strong>Amount to Collect = Excess = Min Wage Gross − Actual Salary</strong><br>
+      <em>Example: Actual ₹9,000 → Min Wage ₹12,410 → Excess ₹3,410 collected back. Net pay ≈ ₹12,410 − ₹3,410 − deductions = employee's effective take-home.</em>
+    </div>
+  `;
+}
+
+// ====== MINIMUM WAGES ======
+function getMwState() {
+  const el = document.getElementById('mwState');
+  return el ? el.value : 'central';
+}
+
+function getMwZone() {
+  const el = document.getElementById('mwZone');
+  return el ? el.value : 'I';
+}
+
+function renderMinWages() {
+  const state = getMwState();
+  const zone = getMwZone();
+  const area = document.getElementById('compArea').value;
+
+  document.getElementById('mwZone').style.display = state === 'ap' ? 'inline-block' : 'none';
+  document.getElementById('compArea').style.display = state === 'ap' ? 'none' : 'inline-block';
+
+  let html = '';
+  if (state === 'ap') {
+    html = `<table>
+      <thead><tr><th>AP Scheduled Employment</th><th class="text-right">Zone ${zone} (₹/mo)</th><th>Zones Available</th></tr></thead>
+      <tbody>`;
+    Object.entries(AP_MIN_WAGES_MONTHLY).forEach(([key, w]) => {
+      const rate = w.rates[zone];
+      const displayRate = rate ? `₹${rate.toFixed(0)}` : '<span class="badge badge-orange">N/A</span>';
+      html += `<tr><td>${w.label}</td><td class="text-right"><strong>${displayRate}</strong></td><td>${w.zones.join(', ')}</td></tr>`;
+    });
+    html += `</tbody></table>`;
+    html += `<p style="font-size:0.8rem;color:#888;margin-top:0.5rem;">Source: AP Gazette No. G/430/2025 dated 07-04-2025. Zone I = Municipal Corporations & Special Grade Municipalities. Zone II = Rest of AP. Zone III = Rural (Security only). VDA ₹6.4-6.75/CPI point.</p>`;
+  } else {
+    html = `<table>
+      <thead><tr><th>Worker Category</th><th class="text-right">Per Day (₹)</th><th class="text-right">Per Month (₹)</th><th>Skill Level</th></tr></thead>
+      <tbody>`;
+    Object.entries(MIN_WAGES_CENTRAL).forEach(([key, w]) => {
+      const daily = w[area] || 0;
+      const monthlyEntry = MIN_WAGES_MONTHLY[key];
+      const monthly = monthlyEntry ? monthlyEntry[area] : (daily * 26);
+      const skill = key.includes('store') || key.includes('supervisor') || key.includes('watchmanArms') ? 'Skilled' : (key.includes('assistant') || key.includes('unskilled')) ? 'Unskilled' : 'Semi-skilled';
+      html += `<tr><td>${w.label}</td><td class="text-right">₹${daily}</td><td class="text-right">₹${monthly.toFixed(0)}</td><td>${skill}</td></tr>`;
+    });
+    html += `</tbody></table>`;
+  }
+  document.getElementById('minWageTable').innerHTML = html;
+
+  const cl = document.getElementById('complianceChecklist');
+  cl.innerHTML = `
+    <table>
+      <thead><tr><th>Check</th><th>Requirement</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Minimum wages paid — ${state === 'ap' ? 'AP (Zone '+zone+'): ₹'+(AP_MIN_WAGES_MONTHLY.apPeon.rates[zone]||12080)+'/mo for Peon' : 'Central: ₹'+(MIN_WAGES_CENTRAL.sweeper[area]*26).toFixed(0)+'/mo | State: ₹'+MIN_WAGES_MONTHLY.sweeperState[area]+'/mo for Area '+area}</td><td><span class="badge badge-green">Verify with payroll</span></td></tr>
+        <tr><td>2</td><td>ESIC deducted @ 0.75% (employee) + 3.25% (employer) for wages ≤ ${getSettings().esiCeil}</td><td><span class="badge badge-green">Configured</span></td></tr>
+        <tr><td>3</td><td>EPF deducted @ 12% (employee) + 12% (employer) on basic up to ₹${getSettings().epfCeil} ceiling</td><td><span class="badge badge-green">Configured</span></td></tr>
+        <tr><td>4</td><td>EPS (8.33% of basic, max ₹1,250) contributed by employer</td><td><span class="badge badge-green">Configured</span></td></tr>
+        <tr><td>5</td><td>Professional Tax deducted as per ${PT_SLABS[getSettings().state]?.label || getSettings().state} rules</td><td><span class="badge badge-green">Configured</span></td></tr>
+        <tr><td>6</td><td>UAN issued to all employees</td><td><span class="badge ${data.employees.every(e => e.uan) ? 'green' : 'orange'}">${data.employees.every(e => e.uan) ? 'All have UAN' : 'Missing UAN for some'}</span></td></tr>
+        <tr><td>7</td><td>ESIC registration for employees with gross ≤ ${getSettings().esiCeil}</td><td><span class="badge badge-green">Verify</span></td></tr>
+      </tbody>
+    </table>`;
+}
+
+// ====== DATA MANAGEMENT ======
+function confirmClearData() {
+  if (confirm('Are you sure you want to clear ALL data? This cannot be undone.')) {
+    if (confirm('Really clear all data?')) {
+      data = { employees: [], payslips: [], settings: data.settings };
+      saveData();
+      renderDashboard();
+      toast('All data cleared', 'success');
+    }
+  }
+}
+
+function exportData() {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'payroll-data-' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Data exported', 'success');
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const d = JSON.parse(e.target.result);
+      if (d.employees && d.payslips) {
+        data = d;
+        saveData();
+        applySettings();
+        renderDashboard();
+        toast('Data imported successfully', 'success');
+      } else {
+        toast('Invalid data file', 'error');
+      }
+    } catch(err) {
+      toast('Error importing data: ' + err.message, 'error');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+// ====== MODAL CLOSE ON OVERLAY CLICK ======
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', function(e) {
+    if (e.target === this) {
+      this.classList.remove('show');
+    }
+  });
+});
+
+// ====== EMPLOYEE CODE UNIQUE CHECK ======
+function isCodeTaken(code, excludeId) {
+  return data.employees.some(e => e.code === code && e.id !== excludeId);
+}
+
+// ====== INIT ======
+document.addEventListener('DOMContentLoaded', function() {
+  populateMonths();
+  loadData();
+  if (data.employees.length === 0) {
+    const sampleEmps = [
+      { id: 'EMP001', name: 'Ramesh Kumar', code: 'EMP001', designation: 'Watchman', department: 'Security', doj: '2024-01-15', gender: 'male', uan: '123456789012', esicNo: '12345678901234567', bank: 'SBI', ifsc: 'SBIN0001234', basic: 12000, hra: 4800, conv: 1600, med: 1250, special: 800, other: 0, epfOptOut: false, selfContribute: false },
+      { id: 'EMP002', name: 'Suresh Patel', code: 'EMP002', designation: 'Sweeper', department: 'Housekeeping', doj: '2024-03-01', gender: 'male', uan: '123456789013', esicNo: '12345678901234568', bank: 'Canara', ifsc: 'CANB0005678', basic: 10000, hra: 4000, conv: 1600, med: 1250, special: 0, other: 0, epfOptOut: false, selfContribute: false },
+      { id: 'EMP003', name: 'Amit Singh', code: 'EMP003', designation: 'Store Keeper', department: 'Store', doj: '2023-06-10', gender: 'male', uan: '123456789014', esicNo: '12345678901234569', bank: 'HDFC', ifsc: 'HDFC0009012', basic: 15000, hra: 6000, conv: 1600, med: 1250, special: 1500, other: 0, epfOptOut: false, selfContribute: false },
+      { id: 'EMP004', name: 'Priya Sharma', code: 'EMP004', designation: 'Attender', department: 'Administration', doj: '2024-07-20', gender: 'female', uan: '123456789015', esicNo: '12345678901234570', bank: 'ICICI', ifsc: 'ICIC0003456', basic: 11000, hra: 4400, conv: 1600, med: 1250, special: 500, other: 0, epfOptOut: false, selfContribute: false },
+      { id: 'EMP005', name: 'Mohan Lal', code: 'EMP005', designation: 'Peon', department: 'Administration', doj: '2024-09-05', gender: 'male', uan: '', esicNo: '', bank: 'BOB', ifsc: 'BARB0007890', basic: 7500, hra: 2210, conv: 1600, med: 1100, special: 0, other: 0, epfOptOut: false, selfContribute: false, mwRecovery: true, actualSalary: 9000 },
+      { id: 'EMP006', name: 'Vijay Kumar', code: 'EMP006', designation: 'Security Guard', department: 'Security', doj: '2025-06-01', gender: 'male', uan: '', esicNo: '', bank: 'SBI', ifsc: 'SBIN0004321', basic: 18000, hra: 7200, conv: 1600, med: 1250, special: 0, other: 0, epfOptOut: true, selfContribute: true }
+    ];
+    data.employees = sampleEmps;
+    saveData();
+  }
+  renderDashboard();
+  document.getElementById('calcState').value = getSettings().state || 'andhrapradesh';
+  runCalculator();
+
+  const settingsState = getSettings().state;
+  document.getElementById('mwState').value = settingsState === 'andhrapradesh' ? 'ap' : 'central';
+  renderMinWages();
+
+  document.getElementById('empDesignation').addEventListener('change', updateEmpMinWage);
+  ['empBasic','empHra','empConv','empMed','empSpecial','empOther'].forEach(id => {
+    document.getElementById(id).addEventListener('input', updateEmpMinWage);
+  });
+
+  document.getElementById('mwState').addEventListener('change', function() {
+    const zoneSel = document.getElementById('mwZone');
+    const areaSel = document.getElementById('compArea');
+    if (this.value === 'ap') {
+      zoneSel.style.display = 'inline-block';
+      areaSel.style.display = 'none';
+    } else {
+      zoneSel.style.display = 'none';
+      areaSel.style.display = 'inline-block';
+    }
+  });
+});
+</script>
+</body>
+</html>

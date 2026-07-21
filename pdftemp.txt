@@ -1,0 +1,46 @@
+﻿Registered No. HSE-49/2016
+PART II EXTRAORDINARY
+No.60 AMARAVATI, THURSDAY, APRIL 10, 2025 G.21
+NOTIFICATIONS BY HEADS OF DEPARTMENTS, Etc.
+--x--
+COMMISSIONER OF LABOUR, A::P, VIJAYAWADA
+AND THE COMPETENT AUTHORITY
+UNDER MINIMUM WAGES ACT, 1948
+No. G/430/2025, Date : 07-04-2025
+COST OF LIVING INDEX NUMBERS APPLICABLE TO THE EMPLOYEES
+EMPLOYED IN THE SCHEDULED EMPLOYMENTS AS ON 01-04-2025 - COST
+OF LIVING ALLOWANCE PAYABLE.
+[ 1 ]
+2 ANDHRA PRADESH GAZETTE EXTRAORDINARY [Part-II
+April 10, 2025] ANDHRA PRADESH GAZETTE EXTRAORDINARY 3
+4 ANDHRA PRADESH GAZETTE EXTRAORDINARY [Part-II
+April 10, 2025] ANDHRA PRADESH GAZETTE EXTRAORDINARY 5
+6 ANDHRA PRADESH GAZETTE EXTRAORDINARY [Part-II
+April 10, 2025] ANDHRA PRADESH GAZETTE EXTRAORDINARY 7
+M.V. SESHAGIRI BABU,
+Commissioner of Labour.
+8 ANDHRA PRADESH GAZETTE EXTRAORDINARY [Part-II
+April 10, 2025] ANDHRA PRADESH GAZETTE EXTRAORDINARY 9
+10 ANDHRA PRADESH GAZETTE EXTRAORDINARY [Part-II
+April 10, 2025] ANDHRA PRADESH GAZETTE EXTRAORDINARY 11
+12 ANDHRA PRADESH GAZETTE EXTRAORDINARY [Part-II
+April 10, 2025] ANDHRA PRADESH GAZETTE EXTRAORDINARY 13
+14 ANDHRA PRADESH GAZETTE EXTRAORDINARY [Part-II
+April 10, 2025] ANDHRA PRADESH GAZETTE EXTRAORDINARY 15
+16 ANDHRA PRADESH GAZETTE EXTRAORDINARY [Part-II
+python : Traceback (most recent call last):
+At line:1 char:1
++ python -c "import pdfplumber; pdf = pdfplumber.open('C:\\Users\\vikra ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  File "<string>", line 1, in <module>
+    import pdfplumber; pdf = pdfplumber.open('C:\\Users\\vikra\\Downloads\\ESIC EPFO\\AP2025AP2025APR.pdf'); 
+[print(page.extract_text()) for page in pdf.pages]
+                                                                                                              
+~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\vikra\AppData\Local\Programs\Python\Python314\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode characters in position 57-71: character maps to <undefined>
