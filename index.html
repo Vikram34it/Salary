@@ -1264,12 +1264,16 @@ function computePayslip(emp, month, year, settings) {
   }
 
   const mwRecovery = emp.mwRecovery && emp.actualSalary && emp.actualSalary < gross ? gross - emp.actualSalary : 0;
+  const mwShortfall = emp.mwRecovery && emp.actualSalary && emp.actualSalary > gross ? emp.actualSalary - gross : 0;
   if (mwRecovery > 0) {
     if (selfContribute) {
       amountToCollect += mwRecovery;
     }
     totalDed += mwRecovery;
     netPay = gross - totalDed;
+  }
+  if (mwShortfall > 0) {
+    netPay = (gross + mwShortfall) - totalDed;
   }
 
   return {
@@ -1300,6 +1304,7 @@ function computePayslip(emp, month, year, settings) {
     epfOptedOut,
     selfContribute,
     mwRecovery,
+    mwShortfall,
     generatedAt: new Date().toISOString()
   };
 }
@@ -1414,6 +1419,7 @@ function showPayslipModal(ps) {
         </tr>
         <tr><td>Medical</td><td class="text-right">₹${ps.med.toFixed(0)}</td><td>&nbsp;</td><td>&nbsp;</td></tr>
         ${ps.mwRecovery > 0 ? `<tr><td>&nbsp;</td><td>&nbsp;</td><td>MW Top-up Recovery</td><td class="text-right" style="color:#e74c3c;">-₹${ps.mwRecovery.toFixed(0)}</td></tr>` : ''}
+        ${ps.mwShortfall > 0 ? `<tr><td>MW Top-up Shortfall</td><td class="text-right" style="color:#27ae60;">+₹${ps.mwShortfall.toFixed(0)}</td><td>&nbsp;</td><td>&nbsp;</td></tr>` : ''}
         <tr><td>Special Allowance</td><td class="text-right">₹${ps.special.toFixed(0)}</td><td>&nbsp;</td><td>&nbsp;</td></tr>
         ${ps.other > 0 ? `<tr><td>Other</td><td class="text-right">₹${ps.other.toFixed(0)}</td><td>&nbsp;</td><td>&nbsp;</td></tr>` : ''}
         <tr class="total-row">
@@ -1768,21 +1774,25 @@ function renderMwRecovery() {
     return;
   }
 
-  let totalExcess = 0, totalRecovery = 0, totalGross = 0;
+  let totalExcess = 0, totalShortfall = 0, totalGross = 0;
   let rows = '';
   recoverySlips.forEach(ps => {
     const emp = data.employees.find(e => e.id === ps.empId);
     const actualSal = emp ? (emp.actualSalary || ps.gross) : ps.gross;
     const excess = ps.mwRecovery || 0;
+    const shortfall = ps.mwShortfall || 0;
     totalExcess += excess;
-    totalRecovery += excess;
+    totalShortfall += shortfall;
     totalGross += ps.gross || 0;
+    const diff = excess > 0 ? excess : (shortfall > 0 ? -shortfall : 0);
+    const diffColor = excess > 0 ? '#e74c3c' : (shortfall > 0 ? '#27ae60' : '');
+    const diffLabel = excess > 0 ? 'Recover ₹' + excess.toFixed(0) : (shortfall > 0 ? 'Pay ₹' + shortfall.toFixed(0) : '-');
     rows += `<tr>
       <td><strong>${ps.empName}</strong></td>
       <td>${ps.empCode}</td>
       <td>₹${actualSal.toFixed(0)}</td>
       <td>₹${ps.gross.toFixed(0)}</td>
-      <td style="color:#e74c3c;"><strong>₹${excess.toFixed(0)}</strong></td>
+      <td style="color:${diffColor};"><strong>${diffLabel}</strong></td>
       <td>₹${(ps.esiEmp || 0).toFixed(0)}</td>
       <td>₹${(ps.epfEmp || 0).toFixed(0)}</td>
       <td>${ps.profTax > 0 ? '₹'+ps.profTax.toFixed(0) : '-'}</td>
@@ -1798,7 +1808,7 @@ function renderMwRecovery() {
         <thead>
           <tr>
             <th>Employee</th><th>Code</th><th>Actual Salary</th><th>Min Wage Gross</th>
-            <th>Excess to Recover</th><th>ESIC</th><th>EPF</th><th>PT</th>
+            <th>Adjustment</th><th>ESIC</th><th>EPF</th><th>PT</th>
             <th>Total Deductions</th><th>Net Pay</th><th></th>
           </tr>
         </thead>
@@ -1807,7 +1817,7 @@ function renderMwRecovery() {
           <tr>
             <td><strong>TOTAL (${recoverySlips.length} employees)</strong></td><td></td><td></td>
             <td>₹${totalGross.toFixed(0)}</td>
-            <td style="color:#e74c3c;"><strong>₹${totalExcess.toFixed(0)}</strong></td>
+            <td style="color:#e65100;"><strong>${totalExcess > 0 ? 'Recover ₹'+totalExcess.toFixed(0) : ''}${totalExcess > 0 && totalShortfall > 0 ? ' / ' : ''}${totalShortfall > 0 ? 'Pay ₹'+totalShortfall.toFixed(0) : ''}</strong></td>
             <td>₹${recoverySlips.reduce((s,p) => s + (p.esiEmp||0), 0).toFixed(0)}</td>
             <td>₹${recoverySlips.reduce((s,p) => s + (p.epfEmp||0), 0).toFixed(0)}</td>
             <td>₹${recoverySlips.reduce((s,p) => s + (p.profTax||0), 0).toFixed(0)}</td>
@@ -1820,25 +1830,26 @@ function renderMwRecovery() {
     </div>
     <div class="grid-3" style="margin-top:1.5rem;">
       <div class="card" style="margin:0;box-shadow:none;border:1px solid var(--border);">
-        <h3 style="color:#e74c3c;">Total Excess Paid (Gross)</h3>
+        <h3 style="color:#e74c3c;">Total Excess to Recover</h3>
         <div style="font-size:1.5rem;font-weight:700;color:#e74c3c;">₹${totalExcess.toFixed(0)}</div>
-        <div style="font-size:0.75rem;color:#666;">Min Wage Gross − Actual Salary</div>
-      </div>
-      <div class="card" style="margin:0;box-shadow:none;border:1px solid var(--border);background:#fff3e0;">
-        <h3 style="color:#e65100;">Total Amount to Collect Back</h3>
-        <div style="font-size:1.5rem;font-weight:700;color:#e65100;">₹${totalRecovery.toFixed(0)}</div>
-        <div style="font-size:0.75rem;color:#666;">This is the excess to recover from employees</div>
+        <div style="font-size:0.75rem;color:#666;">When actual salary &lt; min wage gross</div>
       </div>
       <div class="card" style="margin:0;box-shadow:none;border:1px solid var(--border);background:#e8f5e9;">
-        <h3 style="color:var(--success);">Effective Net Cost to Company</h3>
-        <div style="font-size:1.5rem;font-weight:700;color:var(--success);">₹${(totalGross - totalRecovery).toFixed(0)}</div>
-        <div style="font-size:0.75rem;color:#666;">= Gross Paid − Amount Collected</div>
+        <h3 style="color:#27ae60;">Total Shortfall to Pay</h3>
+        <div style="font-size:1.5rem;font-weight:700;color:#27ae60;">₹${totalShortfall.toFixed(0)}</div>
+        <div style="font-size:0.75rem;color:#666;">When actual salary &gt; min wage gross</div>
+      </div>
+      <div class="card" style="margin:0;box-shadow:none;border:1px solid var(--border);background:#fff3e0;">
+        <h3 style="color:#e65100;">Net Adjustment</h3>
+        <div style="font-size:1.5rem;font-weight:700;color:#e65100;">${totalExcess >= totalShortfall ? 'Recover ₹' + (totalExcess - totalShortfall).toFixed(0) : 'Pay ₹' + (totalShortfall - totalExcess).toFixed(0)}</div>
+        <div style="font-size:0.75rem;color:#666;">Excess to Recover − Shortfall to Pay</div>
       </div>
     </div>
     <div style="margin-top:1rem;padding:0.75rem;background:#fff3e0;border-radius:8px;border:1px solid #ffcc80;font-size:0.85rem;">
-      <strong>How it works:</strong> For employees with actual salary below minimum wage, the company shows the minimum wage gross on the payslip (compliance). The excess (min wage gross − actual salary) is recovered from the employee as a deduction.<br>
-      <strong>Amount to Collect = Excess = Min Wage Gross − Actual Salary</strong><br>
-      <em>Example: Actual ₹9,000 → Min Wage ₹12,410 → Excess ₹3,410 collected back. Net pay ≈ ₹12,410 − ₹3,410 − deductions = employee's effective take-home.</em>
+      <strong>How it works:</strong> For employees with MW Recovery enabled, the system compares their actual salary to the minimum wage gross shown on the payslip.<br>
+      • If <strong>actual &lt; min wage gross</strong>: Excess is recovered from employee as a deduction (Recover mode)<br>
+      • If <strong>actual &gt; min wage gross</strong>: Shortfall is paid <em>to</em> employee as additional earning (Pay mode)<br>
+      <strong>Net Adjustment = Total Excess to Recover − Total Shortfall to Pay</strong>
     </div>
   `;
 }
